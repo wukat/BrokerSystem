@@ -9,10 +9,12 @@ import javax.persistence.*;
 @Entity
 public class TestEntity extends Model {
 
+    public TestEntity() {}
     @Id
+    @GeneratedValue
     public Integer id;
 
     @Required
-    public String name;
+    public String name = "MAGDA";
 
 }
