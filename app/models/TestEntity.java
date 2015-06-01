@@ -10,6 +10,7 @@ import javax.persistence.*;
 public class TestEntity extends Model {
 
     public TestEntity() {}
+
     @Id
     @GeneratedValue
     public Integer id;
