@@ -13,7 +13,7 @@ public class UserData extends Model {
 
     @Id
     @OneToOne
-    @PrimaryKeyJoinColumn
+//    @PrimaryKeyJoinColumn
     private User user;
 
     @Column(name = "name")
