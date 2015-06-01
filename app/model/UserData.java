@@ -1,7 +1,9 @@
-package models;
+package model;
 
-import play.db.ebean.Model;
 
+import org.hibernate.annotations.GenericGenerator;
+//import play.db.ebean.Model;
+import org.hibernate.annotations.Parameter;
 import javax.persistence.*;
 
 /**
@@ -9,11 +11,17 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "user_data")
-public class UserData extends Model {
+public class UserData{// extends Model {
+
 
     @Id
+    @Column(name="email", unique=true, nullable=false)
+    @GeneratedValue(generator="gen")
+    @GenericGenerator(name="gen", strategy="foreign", parameters=@Parameter(name="property", value="user"))
+    private String email;
+
     @OneToOne
-//    @PrimaryKeyJoinColumn
+    @PrimaryKeyJoinColumn
     private User user;
 
     @Column(name = "name")

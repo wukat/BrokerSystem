@@ -1,17 +1,24 @@
-package models;
+package model;
 
-import play.db.ebean.*;
-import play.data.validation.Constraints.*;
+import org.hibernate.annotations.*;
+//import play.db.ebean.*;
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 
 @Entity
 @Table(name = "roles")
-public class Role extends Model {
+public class Role{// extends Model {
 
     @Id
+    @Column(name="email", unique=true, nullable=false)
+    @GeneratedValue(generator="gen")
+    @GenericGenerator(name="gen", strategy="foreign", parameters=@org.hibernate.annotations.Parameter(name="property", value="user"))
+    private String email;
+
     @OneToOne
-//    @PrimaryKeyJoinColumn
+    @PrimaryKeyJoinColumn
     private User user;
 
     @Column(name="role")

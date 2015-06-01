@@ -1,6 +1,6 @@
-package models;
+package model;
 
-import java.sql.Date;
+import java.util.Set;
 
 import javax.persistence.*;
 
@@ -17,12 +17,15 @@ public class User {
     private String password;
 
     @OneToOne(mappedBy="user", cascade=CascadeType.ALL)
-    @JoinColumn(name = "email")
+//    @JoinColumn(name = "email")
     private Role role;
 
     @OneToOne(mappedBy="user", cascade=CascadeType.ALL)
-    @JoinColumn(name = "email")
+//    @JoinColumn(name = "email")
     private UserData userData;
+
+    @OneToMany(mappedBy="user", cascade=CascadeType.ALL)
+    private Set<Message> messages;
 
 
     public String getEmail() {
@@ -55,6 +58,14 @@ public class User {
 
     public void setUserData(UserData userData) {
         this.userData = userData;
+    }
+
+    public Set<Message> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(Set<Message> messages) {
+        this.messages = messages;
     }
 
     public User() {}
