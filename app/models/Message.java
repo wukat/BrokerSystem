@@ -1,4 +1,4 @@
-package model;
+package models;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -17,11 +17,12 @@ public class Message {
     private Long messageId;
 
     @ManyToOne
-    @JoinColumn(name="email")
-    private User user;
+    @JoinColumn(name="sender")
+    private User userSender;
 
-    @Column(name="sender")
-    private String sender;
+    @ManyToOne
+    @JoinColumn(name="recipient")
+    private User userRecipient;
 
     @Column(name="date")
     private Date date;
@@ -40,20 +41,20 @@ public class Message {
         this.messageId = messageId;
     }
 
-    public User getUser() {
-        return user;
+    public User getUserSender() {
+        return userSender;
     }
 
-    public void setUser(User userFrom) {
-        this.user = userFrom;
+    public void setUserSender(User userSender) {
+        this.userSender = userSender;
     }
 
-    public String getSender() {
-        return sender;
+    public User getUserRecipient() {
+        return userRecipient;
     }
 
-    public void setSender(String sender) {
-        this.sender = sender;
+    public void setUserRecipient(User userRecipient) {
+        this.userRecipient = userRecipient;
     }
 
     public Date getDate() {
@@ -81,9 +82,9 @@ public class Message {
     }
 
     public Message(){}
-    public Message(User user, String sender, Date date, String subject, String content){
-        this.user = user;
-        this.sender = sender;
+    public Message(User userSender, User userRecipient, Date date, String subject, String content){
+        this.userSender = userSender;
+        this.userRecipient = userRecipient;
         this.date = date;
         this.subject = subject;
         this.content = content;
