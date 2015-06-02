@@ -15,8 +15,6 @@ public class Client implements Serializable {
     @Column(name="password")
     private String password;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy="client", cascade=CascadeType.ALL)
-    @JoinColumn(name = "client_email")
     @Column(name="active", nullable = false, columnDefinition = "Boolean default false")
     private Boolean active = false;
 
@@ -27,14 +25,6 @@ public class Client implements Serializable {
     @OneToOne(fetch = FetchType.LAZY, mappedBy="client", cascade=CascadeType.ALL)
     @JoinColumn(name = "client_email")
     private UserData userData;
-
-    public Boolean getActive() {
-        return active;
-    }
-
-    public void setActive(Boolean active) {
-        this.active = active;
-    }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy="clientSender", cascade=CascadeType.ALL)
     private Set<Message> messagesSent;
@@ -47,6 +37,14 @@ public class Client implements Serializable {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy="client", cascade=CascadeType.ALL)
     private Set<Booking> bookings;
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
 
     public String getEmail() {
         return email;
