@@ -30,6 +30,9 @@ public class User {
     @OneToMany(mappedBy="userRecipient", cascade=CascadeType.ALL)
     private Set<Message> messagesReceived;
 
+    @OneToMany(mappedBy="userPublisher", cascade=CascadeType.ALL)
+    private Set<Offer> offersPublished;
+
 
     public String getEmail() {
         return email;
