@@ -1,4 +1,4 @@
-package model;
+package models;
 
 import java.util.Set;
 
@@ -24,8 +24,11 @@ public class User {
 //    @JoinColumn(name = "email")
     private UserData userData;
 
-    @OneToMany(mappedBy="user", cascade=CascadeType.ALL)
-    private Set<Message> messages;
+    @OneToMany(mappedBy="userSender", cascade=CascadeType.ALL)
+    private Set<Message> messagesSent;
+
+    @OneToMany(mappedBy="userRecipient", cascade=CascadeType.ALL)
+    private Set<Message> messagesReceived;
 
 
     public String getEmail() {
@@ -60,12 +63,20 @@ public class User {
         this.userData = userData;
     }
 
-    public Set<Message> getMessages() {
-        return messages;
+    public Set<Message> getMessagesSent() {
+        return messagesSent;
     }
 
-    public void setMessages(Set<Message> messages) {
-        this.messages = messages;
+    public void setMessagesSent(Set<Message> messagesSent) {
+        this.messagesSent = messagesSent;
+    }
+
+    public Set<Message> getMessagesReceived() {
+        return messagesReceived;
+    }
+
+    public void setMessagesReceived(Set<Message> messagesReceived) {
+        this.messagesReceived = messagesReceived;
     }
 
     public User() {}
