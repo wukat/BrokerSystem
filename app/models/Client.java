@@ -17,11 +17,24 @@ public class Client implements Serializable {
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy="client", cascade=CascadeType.ALL)
     @JoinColumn(name = "client_email")
+    @Column(name="active", nullable = false, columnDefinition = "Boolean default false")
+    private Boolean active = false;
+
+    @OneToOne(mappedBy="user", cascade=CascadeType.ALL)
+    @JoinColumn(name = "email")
     private Role role;
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy="client", cascade=CascadeType.ALL)
     @JoinColumn(name = "client_email")
     private UserData userData;
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy="clientSender", cascade=CascadeType.ALL)
     private Set<Message> messagesSent;
