@@ -1,29 +1,21 @@
 package models;
 
-import org.hibernate.annotations.*;
-//import play.db.ebean.*;
 import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.io.Serializable;
 
 
 @Entity
 @Table(name = "roles")
-public class Role{// extends Model {
-//TODO remove id from Role, UserData
-    @Id
-    @Column(name="email", unique=true, nullable=false)
-    @GeneratedValue(generator="gen")
-    @GenericGenerator(name="gen", strategy="foreign", parameters=@org.hibernate.annotations.Parameter(name="property", value="user"))
-    private String email;
+public class Role implements Serializable {// extends Model {
 
+    @Id
     @OneToOne
-    @PrimaryKeyJoinColumn
     private User user;
 
     @Column(name="role")
     private String role;
-
 
     public User getUser() {
         return user;
@@ -46,5 +38,4 @@ public class Role{// extends Model {
         this.user = user;
         this.role = role;
     }
-
 }

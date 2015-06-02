@@ -1,5 +1,6 @@
 package models;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import javax.persistence.*;
@@ -7,7 +8,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name="users")
-public class User {
+public class User implements Serializable {
 
     @Id
     @Column(name="email")
@@ -17,11 +18,11 @@ public class User {
     private String password;
 
     @OneToOne(mappedBy="user", cascade=CascadeType.ALL)
-//    @JoinColumn(name = "email")
+    @JoinColumn(name = "email")
     private Role role;
 
     @OneToOne(mappedBy="user", cascade=CascadeType.ALL)
-//    @JoinColumn(name = "email")
+    @JoinColumn(name = "email")
     private UserData userData;
 
     @OneToMany(mappedBy="userSender", cascade=CascadeType.ALL)
