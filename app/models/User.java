@@ -17,6 +17,9 @@ public class User implements Serializable {
     @Column(name="password")
     private String password;
 
+    @Column(name="active", nullable = false, columnDefinition = "Boolean default false")
+    private Boolean active = false;
+
     @OneToOne(mappedBy="user", cascade=CascadeType.ALL)
     @JoinColumn(name = "email")
     private Role role;
@@ -24,6 +27,14 @@ public class User implements Serializable {
     @OneToOne(mappedBy="user", cascade=CascadeType.ALL)
     @JoinColumn(name = "email")
     private UserData userData;
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
 
     @OneToMany(mappedBy="userSender", cascade=CascadeType.ALL)
     private Set<Message> messagesSent;
