@@ -18,8 +18,8 @@ public class Client implements Serializable {
     @Column(name="active", nullable = false, columnDefinition = "Boolean default false")
     private Boolean active = false;
 
-    @OneToOne(mappedBy="user", cascade=CascadeType.ALL)
-    @JoinColumn(name = "email")
+    @OneToOne(mappedBy="client", cascade=CascadeType.ALL)
+    @JoinColumn(name = "client_email")
     private Role role;
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy="client", cascade=CascadeType.ALL)
@@ -129,9 +129,10 @@ public class Client implements Serializable {
 
     @Override
     public String toString() {
-        return "User{" +
+        return "Client{" +
                 "email='" + email + '\'' +
                 ", password='" + password + '\'' +
+                ", active=" + active +
                 ", role=" + role +
                 ", userData=" + userData +
                 ", messagesSent=" + messagesSent +
