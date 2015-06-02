@@ -10,7 +10,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "roles")
 public class Role{// extends Model {
-
+//TODO remove id from Role, UserData
     @Id
     @Column(name="email", unique=true, nullable=false)
     @GeneratedValue(generator="gen")
