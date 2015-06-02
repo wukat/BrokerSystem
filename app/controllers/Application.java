@@ -25,6 +25,7 @@ public class Application extends Controller {
         Image testImage1 = new Image(testOffer1, null);
         Image testImage2 = new Image(testOffer1, null);
         Image testImage3 = new Image(testOffer1, null);
+        Booking testBooking1 = new Booking(testOffer1, testUser1, new Date(), 5, Boolean.FALSE);
 
         JPA.em().persist(testUser1);
         JPA.em().persist(testUser2);
@@ -35,6 +36,7 @@ public class Application extends Controller {
         JPA.em().persist(testImage1);
         JPA.em().persist(testImage2);
         JPA.em().persist(testImage3);
+        JPA.em().persist(testBooking1);
 
         return ok(index.render("Your new application is ready."));
 

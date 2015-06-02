@@ -45,6 +45,9 @@ public class Offer {
     @OneToMany(mappedBy="offer", cascade=CascadeType.ALL)
     private Set<Image> images;
 
+    @OneToMany(mappedBy="offer", cascade=CascadeType.ALL)
+    private Set<Booking> bookings;
+
 
     public Long getOfferId() {
         return offerId;
@@ -124,6 +127,14 @@ public class Offer {
 
     public void setImages(Set<Image> images) {
         this.images = images;
+    }
+
+    public Set<Booking> getBookings() {
+        return bookings;
+    }
+
+    public void setBookings(Set<Booking> bookings) {
+        this.bookings = bookings;
     }
 
     public Offer(){}

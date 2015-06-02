@@ -33,6 +33,9 @@ public class User {
     @OneToMany(mappedBy="userPublisher", cascade=CascadeType.ALL)
     private Set<Offer> offersPublished;
 
+    @OneToMany(mappedBy="client", cascade=CascadeType.ALL)
+    private Set<Booking> bookings;
+
 
     public String getEmail() {
         return email;
@@ -80,6 +83,22 @@ public class User {
 
     public void setMessagesReceived(Set<Message> messagesReceived) {
         this.messagesReceived = messagesReceived;
+    }
+
+    public Set<Offer> getOffersPublished() {
+        return offersPublished;
+    }
+
+    public void setOffersPublished(Set<Offer> offersPublished) {
+        this.offersPublished = offersPublished;
+    }
+
+    public Set<Booking> getBookings() {
+        return bookings;
+    }
+
+    public void setBookings(Set<Booking> bookings) {
+        this.bookings = bookings;
     }
 
     public User() {}
