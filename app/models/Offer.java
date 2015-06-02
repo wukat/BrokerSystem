@@ -18,8 +18,8 @@ public class Offer {
     private Long offerId;
 
     @ManyToOne
-    @JoinColumn(name="publisher")
-    private User userPublisher;
+    @JoinColumn(name="client_publisher")
+    private Client clientPublisher;
 
     @Column(name="premium")
     private Boolean premium;
@@ -57,12 +57,12 @@ public class Offer {
         this.offerId = offerId;
     }
 
-    public User getUserPublisher() {
-        return userPublisher;
+    public Client getClientPublisher() {
+        return clientPublisher;
     }
 
-    public void setUserPublisher(User userPublisher) {
-        this.userPublisher = userPublisher;
+    public void setClientPublisher(Client clientPublisher) {
+        this.clientPublisher = clientPublisher;
     }
 
     public Boolean getPremium() {
@@ -138,8 +138,8 @@ public class Offer {
     }
 
     public Offer(){}
-    public Offer(User userPublisher, Boolean premium, Integer visitCount, Date expiryDate, Double price, Integer standard, Integer placesNumber, String address){
-        this.userPublisher = userPublisher;
+    public Offer(Client clientPublisher, Boolean premium, Integer visitCount, Date expiryDate, Double price, Integer standard, Integer placesNumber, String address){
+        this.clientPublisher = clientPublisher;
         this.premium = premium;
         this.visitCount = visitCount;
         this.expiryDate = expiryDate;

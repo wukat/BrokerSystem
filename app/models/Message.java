@@ -18,11 +18,11 @@ public class Message {
 
     @ManyToOne
     @JoinColumn(name="sender")
-    private User userSender;
+    private Client clientSender;
 
     @ManyToOne
     @JoinColumn(name="recipient")
-    private User userRecipient;
+    private Client clientRecipient;
 
     @Column(name="date")
     private Date date;
@@ -41,20 +41,20 @@ public class Message {
         this.messageId = messageId;
     }
 
-    public User getUserSender() {
-        return userSender;
+    public Client getClientSender() {
+        return clientSender;
     }
 
-    public void setUserSender(User userSender) {
-        this.userSender = userSender;
+    public void setClientSender(Client clientSender) {
+        this.clientSender = clientSender;
     }
 
-    public User getUserRecipient() {
-        return userRecipient;
+    public Client getClientRecipient() {
+        return clientRecipient;
     }
 
-    public void setUserRecipient(User userRecipient) {
-        this.userRecipient = userRecipient;
+    public void setClientRecipient(Client clientRecipient) {
+        this.clientRecipient = clientRecipient;
     }
 
     public Date getDate() {
@@ -82,9 +82,9 @@ public class Message {
     }
 
     public Message(){}
-    public Message(User userSender, User userRecipient, Date date, String subject, String content){
-        this.userSender = userSender;
-        this.userRecipient = userRecipient;
+    public Message(Client clientSender, Client clientRecipient, Date date, String subject, String content){
+        this.clientSender = clientSender;
+        this.clientRecipient = clientRecipient;
         this.date = date;
         this.subject = subject;
         this.content = content;

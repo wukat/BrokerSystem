@@ -13,7 +13,7 @@ public class UserData implements Serializable {// extends Model {
 
     @Id
     @OneToOne
-    private User user;
+    private Client client;
 
     @Column(name = "name")
     private String name;
@@ -25,12 +25,12 @@ public class UserData implements Serializable {// extends Model {
     private String address;
 
 
-    public User getUser() {
-        return user;
+    public Client getClient() {
+        return client;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     public String getName() {
@@ -58,8 +58,8 @@ public class UserData implements Serializable {// extends Model {
     }
 
     public UserData(){}
-    public UserData(User user, String name, String telephone, String address){
-        this.user = user;
+    public UserData(Client client, String name, String telephone, String address){
+        this.client = client;
         this.name = name;
         this.telephone = telephone;
         this.address = address;

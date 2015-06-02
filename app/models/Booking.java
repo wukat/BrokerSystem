@@ -22,7 +22,7 @@ public class Booking {
 
     @ManyToOne
     @JoinColumn(name = "client")
-    private User client;
+    private Client client;
 
     @Column(name = "date")
     private Date date;
@@ -50,11 +50,11 @@ public class Booking {
         this.offer = offer;
     }
 
-    public User getClient() {
+    public Client getClient() {
         return client;
     }
 
-    public void setClient(User client) {
+    public void setClient(Client client) {
         this.client = client;
     }
 
@@ -83,7 +83,7 @@ public class Booking {
     }
 
     public Booking(){}
-    public Booking(Offer offer, User client, Date date, Integer daysNumber, Boolean cancelled) {
+    public Booking(Offer offer, Client client, Date date, Integer daysNumber, Boolean cancelled) {
         this.offer = offer;
         this.client = client;
         this.date = date;

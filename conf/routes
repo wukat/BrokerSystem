@@ -14,4 +14,3 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 #GET     /clients/:login              controllers.Clients.show(login :String)
 #GET     /login                       controllers.Login.showForm()
 #POST    /login                       controllers.Login.login()
-

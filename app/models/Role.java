@@ -12,17 +12,17 @@ public class Role implements Serializable {// extends Model {
 
     @Id
     @OneToOne
-    private User user;
+    private Client client;
 
     @Column(name="role")
     private String role;
 
-    public User getUser() {
-        return user;
+    public Client getClient() {
+        return client;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     public String getRole() {
@@ -34,8 +34,8 @@ public class Role implements Serializable {// extends Model {
     }
 
     public Role(){}
-    public Role(User user, String role){
-        this.user = user;
+    public Role(Client client, String role){
+        this.client = client;
         this.role = role;
     }
 }

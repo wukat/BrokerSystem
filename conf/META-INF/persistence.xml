@@ -7,10 +7,13 @@
     <provider>org.hibernate.ejb.HibernatePersistence</provider>
     <non-jta-data-source>DefaultDS</non-jta-data-source>
 
-    <class>models.User</class>
-    <class>models.UserData</class>
-    <class>models.Role</class>
-    <class>models.Message</class>
+    <!--<class>models.Client</class>-->
+    <!--<class>models.UserData</class>-->
+    <!--<class>models.Role</class>-->
+    <!--<class>models.Message</class>-->
+    <!--<class>models.Booking</class>-->
+    <!--<class>models.Offer</class>-->
+    <!--<class>models.Image</class>-->
 
     <properties>
 

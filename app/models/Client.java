@@ -1,14 +1,12 @@
 package models;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
 
-import javax.persistence.*;
-
-
 @Entity
-@Table(name="users")
-public class User implements Serializable {
+@Table(name="clients")
+public class Client implements Serializable {
 
     @Id
     @Column(name="email")
@@ -17,26 +15,25 @@ public class User implements Serializable {
     @Column(name="password")
     private String password;
 
-    @OneToOne(mappedBy="user", cascade=CascadeType.ALL)
-    @JoinColumn(name = "email")
+    @OneToOne(fetch = FetchType.LAZY, mappedBy="client", cascade=CascadeType.ALL)
+    @JoinColumn(name = "client_email")
     private Role role;
 
-    @OneToOne(mappedBy="user", cascade=CascadeType.ALL)
-    @JoinColumn(name = "email")
+    @OneToOne(fetch = FetchType.LAZY, mappedBy="client", cascade=CascadeType.ALL)
+    @JoinColumn(name = "client_email")
     private UserData userData;
 
-    @OneToMany(mappedBy="userSender", cascade=CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy="clientSender", cascade=CascadeType.ALL)
     private Set<Message> messagesSent;
 
-    @OneToMany(mappedBy="userRecipient", cascade=CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy="clientRecipient", cascade=CascadeType.ALL)
     private Set<Message> messagesReceived;
 
-    @OneToMany(mappedBy="userPublisher", cascade=CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy="clientPublisher", cascade=CascadeType.ALL)
     private Set<Offer> offersPublished;
 
-    @OneToMany(mappedBy="client", cascade=CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy="client", cascade=CascadeType.ALL)
     private Set<Booking> bookings;
-
 
     public String getEmail() {
         return email;
@@ -102,10 +99,34 @@ public class User implements Serializable {
         this.bookings = bookings;
     }
 
-    public User() {}
-    public User(String email, String password) {
+    public Client() {}
+    public Client(String email, String password) {
         this.email = email;
         this.password = password;
     }
 
+    public Client(String email, String password, Role role, UserData userData, Set<Message> messagesSent, Set<Message> messagesReceived, Set<Offer> offersPublished, Set<Booking> bookings) {
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.userData = userData;
+        this.messagesSent = messagesSent;
+        this.messagesReceived = messagesReceived;
+        this.offersPublished = offersPublished;
+        this.bookings = bookings;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", role=" + role +
+                ", userData=" + userData +
+                ", messagesSent=" + messagesSent +
+                ", messagesReceived=" + messagesReceived +
+                ", offersPublished=" + offersPublished +
+                ", bookings=" + bookings +
+                '}';
+    }
 }
