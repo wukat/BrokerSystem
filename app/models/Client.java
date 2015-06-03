@@ -1,7 +1,11 @@
 package models;
 
+import org.hibernate.Session;
+import play.db.jpa.JPA;
+
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -140,5 +144,13 @@ public class Client implements Serializable {
                 ", offersPublished=" + offersPublished +
                 ", bookings=" + bookings +
                 '}';
+    }
+
+    public static String authenticate(String email, String password) {
+        List result = JPA.em().unwrap(Session.class).createQuery("SELECT c.password FROM Client c WHERE c.email =:email").setString("email", email).list();
+        if (result.size() == 1 && password.equals(result.get(0))) {
+            return "";
+        }
+        return null;
     }
 }
