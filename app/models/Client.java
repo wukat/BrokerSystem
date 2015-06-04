@@ -1,6 +1,8 @@
 package models;
 
 import org.hibernate.Session;
+import org.mindrot.jbcrypt.BCrypt;
+import play.Logger;
 import play.db.jpa.JPA;
 
 import javax.persistence.*;
@@ -9,37 +11,37 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name="clients")
+@Table(name = "clients")
 public class Client implements Serializable {
 
     @Id
-    @Column(name="email")
+    @Column(name = "email")
     private String email;
 
-    @Column(name="password")
+    @Column(name = "password")
     private String password;
 
-    @Column(name="active", nullable = false, columnDefinition = "Boolean default false")
+    @Column(name = "active", nullable = false, columnDefinition = "Boolean default false")
     private Boolean active = false;
 
-    @OneToOne(mappedBy="client", cascade=CascadeType.ALL)
+    @OneToOne(mappedBy = "client", cascade = CascadeType.ALL)
     @JoinColumn(name = "client_email")
     private Role role;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy="client", cascade=CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "client", cascade = CascadeType.ALL)
     @JoinColumn(name = "client_email")
     private UserData userData;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy="clientSender", cascade=CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "clientSender", cascade = CascadeType.ALL)
     private Set<Message> messagesSent;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy="clientRecipient", cascade=CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "clientRecipient", cascade = CascadeType.ALL)
     private Set<Message> messagesReceived;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy="clientPublisher", cascade=CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "clientPublisher", cascade = CascadeType.ALL)
     private Set<Offer> offersPublished;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy="client", cascade=CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "client", cascade = CascadeType.ALL)
     private Set<Booking> bookings;
 
     public Boolean getActive() {
@@ -63,7 +65,7 @@ public class Client implements Serializable {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
     public Role getRole() {
@@ -114,15 +116,17 @@ public class Client implements Serializable {
         this.bookings = bookings;
     }
 
-    public Client() {}
+    public Client() {
+    }
+
     public Client(String email, String password) {
         this.email = email;
-        this.password = password;
+        setPassword(password);
     }
 
     public Client(String email, String password, Role role, UserData userData, Set<Message> messagesSent, Set<Message> messagesReceived, Set<Offer> offersPublished, Set<Booking> bookings) {
         this.email = email;
-        this.password = password;
+        setPassword(password);
         this.role = role;
         this.userData = userData;
         this.messagesSent = messagesSent;
@@ -148,8 +152,13 @@ public class Client implements Serializable {
 
     public static String authenticate(String email, String password) {
         List result = JPA.em().unwrap(Session.class).createQuery("SELECT c.password FROM Client c WHERE c.email =:email").setString("email", email).list();
-        if (result.size() == 1 && password.equals(result.get(0))) {
-            return "";
+        if (result.size() == 1) {
+            try {
+                if (BCrypt.checkpw(password, (String) result.get(0)))
+                    return "";
+            } catch (Exception e) {
+                Logger.debug("Password in database not encrypted, authenticate method");
+            }
         }
         return null;
     }
