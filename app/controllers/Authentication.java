@@ -2,6 +2,7 @@ package controllers;
 
 import models.Client;
 import play.data.Form;
+import play.data.validation.Constraints;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -33,10 +34,21 @@ public class Authentication extends Controller {
         }
     }
 
+    public static Result logout() {
+        session().clear();
+        flash("success", "You've been logged out");
+        return redirect(
+                routes.Application.index()
+        );
+    }
 
     public static class Login {
 
+        @Constraints.Required
+        @Constraints.Email
         public String email;
+
+        @Constraints.Required
         public String password;
 
         public String validate() {

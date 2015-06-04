@@ -9,7 +9,32 @@
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
         <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
     </head>
+    <header>
+        <dl id="user">
+            <dt>User</dt>
+            @if(session().containsKey("email")) {
+                <dd>
+                    <a href="@routes.Authentication.logout()">Logout</a>
+                </dd>
+            }
+        </dl>
+    </header>
     <body>
+        @if(flash.contains("info")) {
+            <p class="info">
+            @flash.get("info")
+            </p>
+        }
+        @if(flash.contains("success")) {
+            <p class="success">
+            @flash.get("success")
+            </p>
+        }
+        @if(flash.contains("error")) {
+            <p class="error">
+            @flash.get("error")
+            </p>
+        }
         @content
     </body>
 </html>

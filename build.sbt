@@ -10,7 +10,8 @@ libraryDependencies ++= Seq(
   javaJpa,
   "org.hibernate" % "hibernate-entitymanager" % "3.6.9.Final",
   "org.hibernate.javax.persistence" % "hibernate-jpa-2.0-api" % "1.0.1.Final",
-  "org.mindrot" % "jbcrypt" % "0.3m"
+  "org.mindrot" % "jbcrypt" % "0.3m",
+  "com.typesafe.play" %% "play-mailer" % "2.4.1"
 )
 
 ebeanEnabled := false

@@ -21,6 +21,9 @@ public class Client implements Serializable {
     @Column(name = "password")
     private String password;
 
+    @Transient
+    private String confirmPassword;
+
     @Column(name = "active", nullable = false, columnDefinition = "Boolean default false")
     private Boolean active = false;
 
@@ -44,6 +47,14 @@ public class Client implements Serializable {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "client", cascade = CascadeType.ALL)
     private Set<Booking> bookings;
 
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
+    }
+
     public Boolean getActive() {
         return active;
     }
@@ -65,7 +76,7 @@ public class Client implements Serializable {
     }
 
     public void setPassword(String password) {
-        this.password = BCrypt.hashpw(password, BCrypt.gensalt());
+        this.password = password;
     }
 
     public Role getRole() {
@@ -159,6 +170,15 @@ public class Client implements Serializable {
             } catch (Exception e) {
                 Logger.debug("Password in database not encrypted, authenticate method");
             }
+        }
+        return null;
+    }
+
+    public String validate() {
+        if (password.length() < 6) {
+            return "Password to short, insert at least 6 signs";
+        } else if (!confirmPassword.equals(password)) {
+            return "Password mismatch";
         }
         return null;
     }

@@ -3,14 +3,13 @@ package controllers;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Result;
-import play.mvc.Security;
 import views.html.index;
 
 
 public class Application extends Controller {
 
     @Transactional
-    @Security.Authenticated(Secured.class)
+//    @Security.Authenticated(Secured.class)
     public static Result index() {
 
 //        Client testUser1 = new Client("lolaa@tlen.pl", "password");
