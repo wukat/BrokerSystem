@@ -4,9 +4,14 @@ import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.index;
+import views.html.notFound;
 
 
 public class Application extends Controller {
+
+    public static Result errorPage(String path) {
+        return ok(notFound.render("You should not be here!"));
+    }
 
     @Transactional
 //    @Security.Authenticated(Secured.class)
@@ -37,6 +42,7 @@ public class Application extends Controller {
 //        System.out.println(JPA.em().unwrap(Session.class).createSQLQuery("SELECT  * FROM clients")
 //                .setResultTransformer(Transformers.aliasToBean(Client.class))
 //                .list().get(0));
+//        JPA.em().unwrap(Session.class).persist(testUser1);
         return ok(index.render("Your new application is ready."));
     }
 

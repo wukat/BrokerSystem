@@ -14,11 +14,15 @@ import java.util.Set;
 @Table(name = "clients")
 public class Client implements Serializable {
 
-    @Id
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
 
-    @Column(name = "password")
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "user_number", unique = true, nullable = false)
+    private Integer userNumber;
+
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Transient
@@ -46,6 +50,14 @@ public class Client implements Serializable {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "client", cascade = CascadeType.ALL)
     private Set<Booking> bookings;
+
+    public Integer getUserNumber() {
+        return userNumber;
+    }
+
+    public void setUserNumber(Integer userNumber) {
+        this.userNumber = userNumber;
+    }
 
     public String getConfirmPassword() {
         return confirmPassword;
@@ -179,7 +191,29 @@ public class Client implements Serializable {
             return "Password to short, insert at least 6 signs";
         } else if (!confirmPassword.equals(password)) {
             return "Password mismatch";
+        } else if (getClientId(email) != null) {
+            return "You already have an account!";
         }
         return null;
+    }
+
+    public static Integer getClientId(String email) {
+        List result = JPA.em().unwrap(Session.class).createQuery("SELECT c.userNumber FROM Client c WHERE c.email =:email").setString("email", email).list();
+        if (result.size() == 1) {
+            return (Integer) result.get(0);
+        }
+        return null;
+    }
+
+    public static void activateClient(Long id) {
+        JPA.em().unwrap(Session.class).createQuery("UPDATE Client c SET active=true").executeUpdate();
+    }
+
+    public static boolean checkActive(String email) {
+        List result = JPA.em().unwrap(Session.class).createQuery("SELECT c.active FROM Client c WHERE c.email =:email").setString("email", email).list();
+        if (result.size() == 1) {
+            return (Boolean) result.get(0);
+        }
+        return false;
     }
 }

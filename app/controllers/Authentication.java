@@ -54,6 +54,8 @@ public class Authentication extends Controller {
         public String validate() {
             if (Client.authenticate(email, password) == null) {
                 return "Invalid user or password";
+            } else if (!Client.checkActive(email)) {
+                return "Your account isn't activated yet! Check your email";
             }
             return null;
         }

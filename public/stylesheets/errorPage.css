@@ -1,0 +1,20 @@
+#notImplemented {
+    left: 0;
+    height: 10em;
+    margin-top: -300px;
+    margin-left : auto;
+    margin-right: auto;
+    text-align: center;
+    line-height: 200px;
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    color: white;
+    font-family: Lucida, monospace;
+    font-size: xx-large;
+}
+
+#notImplemented a {
+    color: inherit;
+    text-decoration: none;
+}
