@@ -13,7 +13,7 @@ public class Booking {
 
     @Id
     @GeneratedValue
-    @Column(name = "booking_id")
+    @Column(name = "bookingId")
     private Long bookingId;
 
     @ManyToOne
@@ -27,7 +27,7 @@ public class Booking {
     @Column(name = "date")
     private Date date;
 
-    @Column(name = "days_number")
+    @Column(name = "daysNumber")
     private Integer daysNumber;
 
     @Column(name = "cancelled")

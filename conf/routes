@@ -3,18 +3,20 @@
 # ~~~~
 
 # Home page
-GET         /                                 controllers.Application.index()
+GET         /                                      controllers.Application.index()
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file                     controllers.Assets.at(path="/public", file)
+GET         /assets/*file                          controllers.Assets.at(path="/public", file)
 
-GET         /authentication                   controllers.Authentication.login()
-POST        /authentication                   controllers.Authentication.authenticate()
-GET         /logout                           controllers.Authentication.logout()
+GET         /authentication                        controllers.Authentication.login()
+POST        /authentication                        controllers.Authentication.authenticate()
+GET         /logout                                controllers.Authentication.logout()
 # my ideas
 
-GET         /users/$id<[0-9]+>/confirm        controllers.UserProfile.confirm(id: Long)
-GET         /users                            controllers.UserProfile.newUserForm()
-POST        /users                            controllers.UserProfile.newUser()
+GET         /users/$id<[0-9]+>/confirm             controllers.UserProfile.confirm(id: Integer)
+GET         /users/$id<[0-9]+>/personalData        controllers.UserProfile.newUserDataForm(id: Integer)
+POST        /users/$id<[0-9]+>/personalData        controllers.UserProfile.newUserData(id: Integer)
+GET         /users                                 controllers.UserProfile.newUserForm()
+POST        /users                                 controllers.UserProfile.newUser()
 
-GET         /:path                            controllers.Application.errorPage(path: String)
+GET         /:path                                 controllers.Application.errorPage(path: String)

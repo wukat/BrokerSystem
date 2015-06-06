@@ -1,24 +1,28 @@
 @(form: Form[Client])
-@main("Login") {
+    @main("Login") {
 
-    @helper.form(routes.UserProfile.newUser()) {
-        <h1>Register</h1>
-        @if(form.hasGlobalErrors) {
-            <p class="error">
-            @form.globalError.message
+        @helper.form(routes.UserProfile.newUser()) {
+            <h1>Register</h1>
+            @if(form.hasGlobalErrors) {
+                <p class="error">
+                @form.globalError.message
+                </p>
+            }
+            <p>
+                <input type="email" name="email" placeholder="Email" value="@form("email").value" required="true">
+            </p>
+            <p>
+                <input type="password" name="password" placeholder="Password" required="true">
+            </p>
+            <p>
+                <input type="password" name="confirmPassword" placeholder="Confirm password" required="true">
+            </p>
+            <p><label>Business user
+                <input type="checkbox" name="bu" placeholder="Business user">
+            </label>
+            </p>
+            <p>
+                <button type="submit">Submit</button>
             </p>
         }
-        <p>
-            <input type="email" name="email" placeholder="Email" value="@form("email").value" required="true">
-        </p>
-        <p>
-            <input type="password" name="password" placeholder="Password" required="true">
-        </p>
-        <p>
-            <input type="password" name="confirmPassword" placeholder="Confirm password" required="true">
-        </p>
-        <p>
-            <button type="submit">Login</button>
-        </p>
     }
-}

@@ -14,20 +14,20 @@ public class Offer {
 
     @Id
     @GeneratedValue
-    @Column(name="offer_id")
+    @Column(name="offerId")
     private Long offerId;
 
     @ManyToOne
-    @JoinColumn(name="client_publisher")
+    @JoinColumn(name="clientPublisher_userNumber")
     private Client clientPublisher;
 
     @Column(name="premium")
     private Boolean premium;
 
-    @Column(name="visit_count")
+    @Column(name="visitCount")
     private Integer visitCount;
 
-    @Column(name="expiry_date")
+    @Column(name="expiryDate")
     private Date expiryDate;
 
     @Column(name="price")
@@ -36,10 +36,10 @@ public class Offer {
     @Column(name="standard")
     private Integer standard;
 
-    @Column(name="places_number")
+    @Column(name="placesNumber")
     private Integer placesNumber;
 
-    @Column(name="address")
+//    @Column(name="address")
     private String address;
 
     @OneToMany(mappedBy="offer", cascade=CascadeType.ALL)

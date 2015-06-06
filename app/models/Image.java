@@ -1,7 +1,6 @@
 package models;
 
 import javax.persistence.*;
-import java.util.Date;
 
 /**
  * Created by magdalena on 01.06.15.
@@ -13,11 +12,11 @@ public class Image {
 
     @Id
     @GeneratedValue
-    @Column(name="image_id")
+    @Column(name="imageId")
     private Long imageId;
 
     @ManyToOne
-    @JoinColumn(name="offer_id")
+    @JoinColumn(name="offer_offerId")
     private Offer offer;
 
     @Column(name="content")

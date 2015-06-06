@@ -13,7 +13,7 @@ public class Message {
 
     @Id
     @GeneratedValue
-    @Column(name="message_id")
+    @Column(name="messageId")
     private Long messageId;
 
     @ManyToOne

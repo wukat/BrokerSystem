@@ -1,0 +1,24 @@
+@(form: Form[UserData], id: Integer)
+@main("Login") {
+
+    @helper.form(routes.UserProfile.newUserDataForm(id)) {
+        <h1>Personal data</h1>
+        @if(form.hasGlobalErrors) {
+            <p class="error">
+            @form.globalError.message
+            </p>
+        }
+        <p>
+            <input type="text" name="name" placeholder="Name" required="true">
+        </p>
+        <p>
+            <input type="text" name="telephone" placeholder="Telephone" required="true">
+        </p>
+        <p>
+            <input type="text" name="address" placeholder="Address" required="true">
+        </p>
+        <p>
+            <button type="submit">Save</button>
+        </p>
+    }
+}
