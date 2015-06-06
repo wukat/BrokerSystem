@@ -82,7 +82,7 @@ public class UserProfile extends Controller {
     }
 
     @Transactional
-    public static Result confirm(Integer id) {
+    public static Result confirm(Integer id) { //TODO do not allow to confirm business account if there is not user data
         Client.activateClient(id);
         flash("success", "Account activated, you can log in now!");
         return ok(index.render("Account activated"));

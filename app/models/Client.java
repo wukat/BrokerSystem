@@ -227,15 +227,6 @@ public class Client implements Serializable {
     }
 
     public static Client getClientById(Integer id) {
-//        final Session session = JPA.em().unwrap(Session.class);
-//        Transaction t = session.beginTransaction();
-//       session.createQuery("SELECT c FROM Client c WHERE c.userNumber=:id").setInteger("id", id).list();
-//            t.commit();
-//        System.out.println(result.get(0));
-//        if (result.size() == 1) {
-//            return (Client) result.get(0);
-//        }
-        System.out.println(JPA.em().find(Client.class, id));
-        return null;
+        return JPA.em().find(Client.class, id);
     }
 }
