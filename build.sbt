@@ -11,7 +11,8 @@ libraryDependencies ++= Seq(
   javaJpa.exclude("org.hibernate.javax.persistence", "hibernate-jpa-2.0-api"),
   "org.hibernate" % "hibernate-entitymanager" % "4.3.10.Final",
   "org.mindrot" % "jbcrypt" % "0.3m",
-  "com.typesafe.play" %% "play-mailer" % "2.4.1"
+  "com.typesafe.play" %% "play-mailer" % "2.4.1",
+  "org.bitbucket.b_c" % "jose4j" % "0.4.2"
 )
 
 ebeanEnabled := false

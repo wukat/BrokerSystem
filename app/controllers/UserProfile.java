@@ -4,6 +4,7 @@ import models.Client;
 import models.Role;
 import models.UserData;
 import org.mindrot.jbcrypt.BCrypt;
+import play.Logger;
 import play.data.Form;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
@@ -68,6 +69,7 @@ public class UserProfile extends Controller {
             boolean businessUser = (userForm.data().get("bu") != null);
             newClient.setPassword(BCrypt.hashpw(newClient.getPassword(), BCrypt.gensalt()));
             Role role = new Role(newClient, (businessUser) ? "business" : "customer");
+            Logger.debug(newClient.getEmail());
             JPA.em().persist(newClient);
             JPA.em().persist(role);
             if (businessUser) {

@@ -1,7 +1,10 @@
 package models;
 
+import play.db.jpa.JPA;
+
 import javax.persistence.*;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -15,7 +18,7 @@ public class Offer {
     @Id
     @GeneratedValue
     @Column(name="offerId")
-    private Long offerId;
+    private Integer offerId;
 
     @ManyToOne
     @JoinColumn(name="clientPublisher_userNumber")
@@ -49,11 +52,11 @@ public class Offer {
     private List<Booking> bookings;
 
 
-    public Long getOfferId() {
+    public Integer getOfferId() {
         return offerId;
     }
 
-    public void setOfferId(Long offerId) {
+    public void setOfferId(Integer offerId) {
         this.offerId = offerId;
     }
 
@@ -149,4 +152,23 @@ public class Offer {
         this.address = address;
     }
 
+    public static LinkedList<Offer> getAllActual() {
+        LinkedList<Offer> result = new LinkedList<>();
+        for (Object el : JPA.em().createQuery("FROM Offer WHERE expiryDate < current_date").getResultList()) {
+            result.add((Offer) el);
+        }
+        return result;
+    }
+
+    public static LinkedList<Offer> getNonPremiumActual() {
+        LinkedList<Offer> result = new LinkedList<>();
+        for (Object el : JPA.em().createQuery("FROM Offer WHERE premium=false AND expiryDate < current_date").getResultList()) {
+            result.add((Offer) el);
+        }
+        return result;
+    }
+
+    public static Offer getOfferById(Integer offerId) {
+        return JPA.em().find(Offer.class, offerId);
+    }
 }

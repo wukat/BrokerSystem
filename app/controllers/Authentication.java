@@ -1,6 +1,8 @@
 package controllers;
 
+import global.Global;
 import models.Client;
+import org.jose4j.lang.JoseException;
 import play.data.Form;
 import play.data.validation.Constraints;
 import play.db.jpa.Transactional;
@@ -21,13 +23,14 @@ public class Authentication extends Controller {
     }
 
     @Transactional
-    public static Result authenticate() {
+    public static Result authenticate() throws JoseException {
         Form<Login> loginForm = form(Login.class).bindFromRequest();
         if (loginForm.hasErrors()) {
             return badRequest(login.render(loginForm));
         } else {
             session().clear();
-            session("email", loginForm.get().email);
+            Global.jwe.setPayload("ok " + loginForm.get().email);
+            session("k", Global.jwe.getCompactSerialization());
             return redirect(
                     routes.Application.index()
             );

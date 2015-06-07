@@ -206,12 +206,17 @@ public class Client implements Serializable {
     }
 
     public static Integer getClientId(String email) {
-        Object result = JPA.em().createQuery("SELECT c.userNumber FROM Client c WHERE c.email =:email").setParameter("email", email).getSingleResult();
-        if (result != null) {
-            return (Integer) result;
+        try {
+            Object result = JPA.em().createQuery("SELECT c.userNumber FROM Client c WHERE c.email =:email").setParameter("email", email).getSingleResult();
+            if (result != null) {
+                return (Integer) result;
+            }
+            Logger.debug("Client ID is null");
+            return null;
+        } catch (NoResultException e) {
+            Logger.debug("Client ID is null");
+            return null;
         }
-        Logger.debug("Client ID is null");
-        return null;
     }
 
     public static void activateClient(Integer id) {

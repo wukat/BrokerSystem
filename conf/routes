@@ -19,4 +19,7 @@ POST        /users/$id<[0-9]+>/personalData        controllers.UserProfile.newUs
 GET         /users                                 controllers.UserProfile.newUserForm()
 POST        /users                                 controllers.UserProfile.newUser()
 
-GET         /:path                                 controllers.Application.errorPage(path: String)
+GET         /offers                                controllers.Offers.all()
+GET         /offers/                               controllers.Offers.all()
+GET         /offers/$id<[0-9]+>                    controllers.Offers.seeOffer(id: Integer)
+
