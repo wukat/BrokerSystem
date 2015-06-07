@@ -2,7 +2,7 @@ package models;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by magdalena on 01.06.15.
@@ -39,14 +39,14 @@ public class Offer {
     @Column(name="placesNumber")
     private Integer placesNumber;
 
-//    @Column(name="address")
+    @Column(name="address")
     private String address;
 
     @OneToMany(mappedBy="offer", cascade=CascadeType.ALL)
-    private Set<Image> images;
+    private List<Image> images;
 
     @OneToMany(mappedBy="offer", cascade=CascadeType.ALL)
-    private Set<Booking> bookings;
+    private List<Booking> bookings;
 
 
     public Long getOfferId() {
@@ -121,19 +121,19 @@ public class Offer {
         this.address = address;
     }
 
-    public Set<Image> getImages() {
+    public List<Image> getImages() {
         return images;
     }
 
-    public void setImages(Set<Image> images) {
+    public void setImages(List<Image> images) {
         this.images = images;
     }
 
-    public Set<Booking> getBookings() {
+    public List<Booking> getBookings() {
         return bookings;
     }
 
-    public void setBookings(Set<Booking> bookings) {
+    public void setBookings(List<Booking> bookings) {
         this.bookings = bookings;
     }
 
