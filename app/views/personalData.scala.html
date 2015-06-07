@@ -4,9 +4,9 @@
     @helper.form(routes.UserProfile.newUserData(id)) {
         <h1>Personal data</h1>
         @if(form.hasGlobalErrors) {
-            <p class="error">
+            <div class="alert alert-danger" role="alert">
             @form.globalError.message
-            </p>
+            </div>
         }
         <p>
             <input type="text" name="name" placeholder="Name" required="true">
@@ -18,7 +18,8 @@
             <input type="text" name="address" placeholder="Address" required="true">
         </p>
         <p>
-            <button type="submit">Save</button>
+        <p>
+            <button class="btn btn-primary" type="submit">Save</button>
         </p>
     }
 }

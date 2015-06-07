@@ -1,6 +1,5 @@
 package models;
 
-import org.hibernate.Session;
 import org.mindrot.jbcrypt.BCrypt;
 import play.Logger;
 import play.db.jpa.JPA;
@@ -147,7 +146,7 @@ public class Client implements Serializable {
         this.password = password;
     }
 
-    public Client(Integer userNumber,  Boolean active, String email, String password) {
+    public Client(Integer userNumber, Boolean active, String email, String password) {
         this.email = email;
         this.password = password;
         this.active = active;
@@ -183,7 +182,7 @@ public class Client implements Serializable {
     }
 
     public static String authenticate(String email, String password) {
-        List result = JPA.em().unwrap(Session.class).createQuery("SELECT c.password FROM Client c WHERE c.email =:email").setString("email", email).list();
+        List result = JPA.em().createQuery("SELECT c.password FROM Client c WHERE c.email =:email").setParameter("email", email).getResultList();
         if (result.size() == 1) {
             try {
                 if (BCrypt.checkpw(password, (String) result.get(0)))
@@ -207,21 +206,22 @@ public class Client implements Serializable {
     }
 
     public static Integer getClientId(String email) {
-        List result = JPA.em().unwrap(Session.class).createQuery("SELECT c.userNumber FROM Client c WHERE c.email =:email").setString("email", email).list();
-        if (result.size() == 1) {
-            return (Integer) result.get(0);
+        Object result = JPA.em().createQuery("SELECT c.userNumber FROM Client c WHERE c.email =:email").setParameter("email", email).getSingleResult();
+        if (result != null) {
+            return (Integer) result;
         }
+        Logger.debug("Client ID is null");
         return null;
     }
 
     public static void activateClient(Integer id) {
-        JPA.em().unwrap(Session.class).createQuery("UPDATE Client c SET active=true").executeUpdate();
+        JPA.em().createQuery("UPDATE Client c SET active=true").executeUpdate();
     }
 
     public static boolean checkActive(String email) {
-        List result = JPA.em().unwrap(Session.class).createQuery("SELECT c.active FROM Client c WHERE c.email =:email").setString("email", email).list();
-        if (result.size() == 1) {
-            return (Boolean) result.get(0);
+        Object result = JPA.em().createQuery("SELECT c.active FROM Client c WHERE c.email =:email").setParameter("email", email).getSingleResult();
+        if (result != null) {
+            return (Boolean) result;
         }
         return false;
     }

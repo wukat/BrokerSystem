@@ -4,9 +4,9 @@
         @helper.form(routes.UserProfile.newUser()) {
             <h1>Register</h1>
             @if(form.hasGlobalErrors) {
-                <p class="error">
+                <div class="alert alert-danger" role="alert">
                 @form.globalError.message
-                </p>
+                </div>
             }
             <p>
                 <input type="email" name="email" placeholder="Email" value="@form("email").value" required="true">
@@ -22,7 +22,7 @@
             </label>
             </p>
             <p>
-                <button type="submit">Submit</button>
+                <button class="btn btn-primary" type="submit">Submit</button>
             </p>
         }
     }

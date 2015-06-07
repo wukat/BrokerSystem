@@ -1,9 +1,5 @@
 package controllers;
 
-import models.Client;
-import org.hibernate.Session;
-import org.hibernate.transform.Transformers;
-import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -43,9 +39,7 @@ public class Application extends Controller {
 //        JPA.em().persist(testImage3);
 //        JPA.em().persist(testBooking1);
 
-        System.out.println(JPA.em().unwrap(Session.class).createSQLQuery("SELECT  * FROM clients")
-                .setResultTransformer(Transformers.aliasToBean(Client.class))
-                .list().get(0));
+//        System.out.println(JPA.em().createQuery("FROM Client  c").getResultList().get(0));
 //        JPA.em().unwrap(Session.class).persist(testUser1);
         return ok(index.render("Your new application is ready."));
     }
