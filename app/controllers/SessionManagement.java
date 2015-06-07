@@ -18,6 +18,7 @@ public class SessionManagement {
                 return Global.jwe.getPayload().split(" ");
             }
         } catch (JoseException e) {
+            System.out.println(e);
             Logger.debug("Encryption failed");
             return null;
         }
@@ -35,10 +36,6 @@ public class SessionManagement {
 
     public static String getEmail(Http.Session session) {
         return getPart(session, 1);
-    }
-
-    public static String getId(Http.Session session) {
-        return getPart(session, 2);
     }
 
     public static boolean isOk(Http.Session session) {
