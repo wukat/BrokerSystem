@@ -22,3 +22,12 @@ body {
     margin-bottom: auto;
     font-size: smaller;
 }
+
+.row #myCarousel {
+    height: 350px;
+}
+.carousel-inner >.item > img,
+.carousel-inner >.item > a > img {
+    margin: auto;
+    height: 350px;
+}

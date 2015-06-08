@@ -25,6 +25,10 @@ import static play.data.Form.form;
 public class UserProfile extends Controller {
 
     public static Result newUserForm() {
+        if (SessionManagement.isOk(session())) {
+            flash("error", "You already have an account");
+            return redirect(routes.Application.index());
+        }
         return ok(
                 createAccount.render(form(Client.class))
         );
@@ -74,7 +78,7 @@ public class UserProfile extends Controller {
             JPA.em().persist(role);
             if (businessUser) {
                 flash("info", "Fill in your personal data to create business account.");
-                return redirect(routes.UserProfile.newUserDataForm(Client.getClientId(newClient.getEmail())));
+                return redirect(routes.UserProfile.newUserDataForm(newClient.getUserNumber()));
             } else {
                 sendActivationMail(newClient.getEmail());
                 flash("success", "Registration proceeded successfully! Check your email for confirmation mail.");

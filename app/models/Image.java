@@ -13,21 +13,20 @@ public class Image {
     @Id
     @GeneratedValue
     @Column(name="imageId")
-    private Long imageId;
+    private Integer imageId;
 
     @ManyToOne
     @JoinColumn(name="offer_offerId")
     private Offer offer;
 
     @Column(name="content")
-    private Byte[] content;
+    private String name;
 
-
-    public Long getImageId() {
+    public Integer getImageId() {
         return imageId;
     }
 
-    public void setImageId(Long imageId) {
+    public void setImageId(Integer imageId) {
         this.imageId = imageId;
     }
 
@@ -39,17 +38,17 @@ public class Image {
         this.offer = offer;
     }
 
-    public Byte[] getContent() {
-        return content;
+    public String getName() {
+        return name;
     }
 
-    public void setContent(Byte[] content) {
-        this.content = content;
+    public void setName(String content) {
+        this.name = content;
     }
 
     public Image(){}
-    public Image(Offer offer, Byte[] content){
+    public Image(Offer offer, String name){
         this.offer = offer;
-        this.content = content;
+        this.name = name;
     }
 }

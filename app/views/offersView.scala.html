@@ -27,7 +27,7 @@
                 <tbody>
                 @for(offer <- offers) {
                     <tr data-link="row" class="rowlink">
-                        <td><a href=@(routes.Offers.seeOffer(offer.getOfferId))></a>@offer.getClientPublisher.getEmail</td>
+                        <td><a href=@(routes.Offers.seeOffer(offer.getOfferId))></a>@offer.getClientPublisher.getUserData.getName</td>
                         <td>@offer.getAddress</td>
                         <td>@offer.getStandard</td>
                         <td>@offer.getPlacesNumber</td>

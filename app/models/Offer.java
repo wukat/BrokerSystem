@@ -45,12 +45,22 @@ public class Offer {
     @Column(name="address")
     private String address;
 
+    @Column(name="hasImages")
+    private boolean hasImages;
+
     @OneToMany(mappedBy="offer", cascade=CascadeType.ALL)
     private List<Image> images;
 
     @OneToMany(mappedBy="offer", cascade=CascadeType.ALL)
     private List<Booking> bookings;
 
+    public boolean isHasImages() {
+        return hasImages;
+    }
+
+    public void setHasImages(boolean hasImages) {
+        this.hasImages = hasImages;
+    }
 
     public Integer getOfferId() {
         return offerId;
@@ -154,7 +164,7 @@ public class Offer {
 
     public static LinkedList<Offer> getAllActual() {
         LinkedList<Offer> result = new LinkedList<>();
-        for (Object el : JPA.em().createQuery("FROM Offer WHERE expiryDate < current_date").getResultList()) {
+        for (Object el : JPA.em().createQuery("FROM Offer WHERE expiryDate > current_date AND hasImages=true").getResultList()) {
             result.add((Offer) el);
         }
         return result;
@@ -162,7 +172,7 @@ public class Offer {
 
     public static LinkedList<Offer> getNonPremiumActual() {
         LinkedList<Offer> result = new LinkedList<>();
-        for (Object el : JPA.em().createQuery("FROM Offer WHERE premium=false AND expiryDate < current_date").getResultList()) {
+        for (Object el : JPA.em().createQuery("FROM Offer WHERE premium=false AND expiryDate > current_date AND hasImages=true").getResultList()) {
             result.add((Offer) el);
         }
         return result;
@@ -170,5 +180,20 @@ public class Offer {
 
     public static Offer getOfferById(Integer offerId) {
         return JPA.em().find(Offer.class, offerId);
+    }
+
+    public static void activateOffer(Integer id) {
+        JPA.em().createQuery("UPDATE Offer o SET hasImages=true WHERE offerId=:id").setParameter("id", id).executeUpdate();
+    }
+
+    public String validate() {
+        if (expiryDate.before(new Date())) {
+            return "Expiry date must be in future";
+        } else if (placesNumber <= 0) {
+            return "Number of places must be greater than 0";
+        } else if (price <= 0) {
+            return "Price must be greater than 0";
+        }
+        return null;
     }
 }

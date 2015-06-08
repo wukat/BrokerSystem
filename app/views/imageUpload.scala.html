@@ -1,0 +1,12 @@
+@(offerId: Integer)
+@main("Upload") {
+    <h1>Upload pictures</h1>
+    <form name="fileUploadForm" method="POST" enctype="multipart/form-data" action="@routes.Offers.upload(offerId)">
+        <p>
+            <input type="file" name="pictures" accept="image/*" multiple="multiple">
+        </p>
+        <p>
+            <button class="btn btn-primary" type="submit">Submit</button>
+        </p>
+    </form>
+}

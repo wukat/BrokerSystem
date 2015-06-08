@@ -219,8 +219,22 @@ public class Client implements Serializable {
         }
     }
 
+    public static Role getClientRole(String email) {
+        try {
+            Object result = JPA.em().createQuery("SELECT c.role FROM Client c WHERE c.email =:email").setParameter("email", email).getSingleResult();
+            if (result != null) {
+                return (Role) result;
+            }
+            Logger.debug("Client role is null");
+            return null;
+        } catch (NoResultException e) {
+            Logger.debug("Client role is null");
+            return null;
+        }
+    }
+
     public static void activateClient(Integer id) {
-        JPA.em().createQuery("UPDATE Client c SET active=true").executeUpdate();
+        JPA.em().createQuery("UPDATE Client c SET active=true where c.userNumber=:id").setParameter("id", id).executeUpdate();
     }
 
     public static boolean checkActive(String email) {
@@ -233,5 +247,9 @@ public class Client implements Serializable {
 
     public static Client getClientById(Integer id) {
         return JPA.em().find(Client.class, id);
+    }
+
+    public static Client getClientByEmail(String email) {
+        return (Client) JPA.em().createQuery("SELECT c FROM Client c WHERE c.email =:email").setParameter("email", email).getSingleResult();
     }
 }

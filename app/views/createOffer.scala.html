@@ -1,0 +1,39 @@
+@(form: Form[Offer])
+@main("New offer") {
+    @helper.form(routes.Offers.newOffer()) {
+        <h1>New offer</h1>
+        @if(form.hasGlobalErrors) {
+            <div class="alert alert-danger" role="alert">
+            @form.globalError.message
+            </div>
+        }
+
+        <p>
+            <input type="text" name="address" placeholder="Address" required="true">
+        </p>
+        <p><label>Premium
+            <input type="checkbox" name="premium"/>
+        </label></p>
+        <p><label>Expiry date
+            <input type="date" name="expiryDate" placeholder="Expiration date" required="true"></label>
+        </p>
+        <p>
+            <input type="text" name="price" placeholder="Price">
+        </p>
+        <p><label>Standard
+            <select name="standard">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select></label>
+        </p>
+        <p>
+            <input type="number" name="placesNumber" placeholder="Place number" required="true"/>
+        </p>
+        <p>
+            <button class="btn btn-primary" type="submit">Submit</button>
+        </p>
+    }
+}
