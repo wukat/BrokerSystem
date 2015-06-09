@@ -24,6 +24,16 @@ public class UserData implements Serializable {// extends Model {
     @Column(name = "address")
     private String address;
 
+    @Column(name="paymentData")
+    private String paymentData;
+
+    public String getPaymentData() {
+        return paymentData;
+    }
+
+    public void setPaymentData(String paymentData) {
+        this.paymentData = paymentData;
+    }
 
     public Client getClient() {
         return client;

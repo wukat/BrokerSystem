@@ -25,3 +25,21 @@ GET         /offers/$id<[0-9]+>/images             controllers.Offers.uploadForm
 POST        /offers/$id<[0-9]+>/images             controllers.Offers.upload(id: Integer)
 POST        /offers                                controllers.Offers.newOffer()
 GET         /offers/$id<[0-9]+>                    controllers.Offers.seeOffer(id: Integer)
+
+#GET         /users/$id<[0-9]+>                      // user profile (with offers and bookings)
+# oferty w profilu pojawiają się tylko przez miesiac od wygasniecia
+#GET        /users/$id<[0-9]+>/offers // create offer form
+#GET        /users/$id<[0-9]+>/offers/$id<[0-9]+>    // edit or create
+#GET        /users/$id<[0-9]+>/offers/$id<[0-9]+>/export    // to pdf
+#GET        /users/$id<[0-9]+>/offers/$id<[0-9]+>/images    // edit or add create // czyli wyswietl wszystki jakie sa i formularz dodawania
+#POST        /users/$id<[0-9]+>/offers/$id<[0-9]+>/images    // edit or add create
+#DELETE        /users/$id<[0-9]+>/offers/$id<[0-9]+>/images/:imId    // edit or add create
+
+#POST        /users/$id<[0-9]+>/booking   // create
+
+#PUT        /users/$id<[0-9]+>/offers/$id<[0-9]+>    // update
+#DELETE     /users/$id<[0-9]+>/offers/$id<[0-9]+>    // remove
+#POST       /users/$id<[0-9]+>/offers/$id<[0-9]+>    // create -- trzeba przeniesc
+
+
+

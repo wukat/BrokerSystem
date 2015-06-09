@@ -38,7 +38,7 @@ public class Offers extends Controller {
         return ok(offersView.render(offers));
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public static Result seeOffer(Integer offerId) { // TODO show offer even if it's expired
         Offer offer = Offer.getOfferById(offerId);
         if (offer == null) {
@@ -48,6 +48,8 @@ public class Offers extends Controller {
             flash("info", "Log in to access premium offers.");
             return redirect(routes.Authentication.login());
         }
+        offer.setVisitCount(offer.getVisitCount() + 1);
+        JPA.em().flush();
         return ok(offerView.render(offer));
     }
 
@@ -74,6 +76,7 @@ public class Offers extends Controller {
         if (clientRole != null && clientRole.getRole().equals("business")) {
             Offer offer = offerForm.get();
             offer.setPremium(offerForm.data().get("premium") != null);
+            offer.setVisitCount(0);
             offer.setHasImages(false);
             offer.setClientPublisher(Client.getClientByEmail(email));
             JPA.em().persist(offer);

@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by magdalena on 01.06.15.
  */
-
+//TODO opis tekstowy
 @Entity
 @Table(name="offers")
 public class Offer {
@@ -23,6 +23,9 @@ public class Offer {
     @ManyToOne
     @JoinColumn(name="clientPublisher_userNumber")
     private Client clientPublisher;
+
+    @Column(name="description")
+    private String description;
 
     @Column(name="premium")
     private Boolean premium;
@@ -53,6 +56,14 @@ public class Offer {
 
     @OneToMany(mappedBy="offer", cascade=CascadeType.ALL)
     private List<Booking> bookings;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public boolean isHasImages() {
         return hasImages;
