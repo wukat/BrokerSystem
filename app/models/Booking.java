@@ -13,26 +13,35 @@ public class Booking {
 
     @Id
     @GeneratedValue
-    @Column(name = "bookingId")
+    @Column(name = "booking_id")
     private Long bookingId;
-
-    @ManyToOne
-    @JoinColumn(name = "offer")
-    private Offer offer;
 
     @ManyToOne
     @JoinColumn(name = "client")
     private Client client;
 
-    @Column(name = "date")
-    private Date date;
+    @ManyToOne
+    @JoinColumn(name = "offered_room_id")
+    private OfferedRoom offeredRoom;
 
-    @Column(name = "daysNumber")
-    private Integer daysNumber;
+    @Column(name="date_from")
+    private Date dateFrom;
+
+    @Column(name="date_to")
+    private Date dateTo;
 
     @Column(name = "cancelled")
     private Boolean cancelled;
 
+
+    public Booking(){}
+    public Booking(Client client, OfferedRoom offeredRoom, Date dateFrom, Date dateTo, Boolean cancelled) {
+        this.client = client;
+        this.offeredRoom = offeredRoom;
+        this.dateFrom = dateFrom;
+        this.dateTo = dateTo;
+        this.cancelled = cancelled;
+    }
 
     public Long getBookingId() {
         return bookingId;
@@ -40,14 +49,6 @@ public class Booking {
 
     public void setBookingId(Long bookingId) {
         this.bookingId = bookingId;
-    }
-
-    public Offer getOffer() {
-        return offer;
-    }
-
-    public void setOffer(Offer offer) {
-        this.offer = offer;
     }
 
     public Client getClient() {
@@ -58,20 +59,28 @@ public class Booking {
         this.client = client;
     }
 
-    public Date getDate() {
-        return date;
+    public OfferedRoom getOfferedRoom() {
+        return offeredRoom;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setOfferedRoom(OfferedRoom offeredRoom) {
+        this.offeredRoom = offeredRoom;
     }
 
-    public Integer getDaysNumber() {
-        return daysNumber;
+    public Date getDateFrom() {
+        return dateFrom;
     }
 
-    public void setDaysNumber(Integer daysNumber) {
-        this.daysNumber = daysNumber;
+    public void setDateFrom(Date dateFrom) {
+        this.dateFrom = dateFrom;
+    }
+
+    public Date getDateTo() {
+        return dateTo;
+    }
+
+    public void setDateTo(Date dateTo) {
+        this.dateTo = dateTo;
     }
 
     public Boolean getCancelled() {
@@ -79,15 +88,6 @@ public class Booking {
     }
 
     public void setCancelled(Boolean cancelled) {
-        this.cancelled = cancelled;
-    }
-
-    public Booking(){}
-    public Booking(Offer offer, Client client, Date date, Integer daysNumber, Boolean cancelled) {
-        this.offer = offer;
-        this.client = client;
-        this.date = date;
-        this.daysNumber = daysNumber;
         this.cancelled = cancelled;
     }
 }

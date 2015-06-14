@@ -2,7 +2,7 @@ package controllers;
 
 import models.Client;
 import models.Role;
-import models.UserData;
+import models.ClientData;
 import org.mindrot.jbcrypt.BCrypt;
 import play.Logger;
 import play.data.Form;
@@ -38,7 +38,7 @@ public class UserProfile extends Controller {
     public static Result newUserDataForm(Integer id) {
         if (Client.getClientById(id) != null) {
             return ok(
-                    personalData.render(form(UserData.class), id)
+                    personalData.render(form(ClientData.class), id)
             );
         }
         return ok(notFound.render("Wrong client id"));
@@ -46,17 +46,17 @@ public class UserProfile extends Controller {
 
     @Transactional
     public static Result newUserData(Integer id) {
-        Form<UserData> dataForm = form(UserData.class).bindFromRequest();
+        Form<ClientData> dataForm = form(ClientData.class).bindFromRequest();
         if (dataForm.hasErrors()) {
             return badRequest(personalData.render(dataForm, id));
         } else {
-            UserData userData = dataForm.get();
+            ClientData clientData = dataForm.get();
             Client client = Client.getClientById(id);
             if (client == null) {
                 return ok(notFound.render("Wrong client id"));
             }
-            userData.setClient(client);
-            JPA.em().persist(userData);
+            clientData.setClient(client);
+            JPA.em().persist(clientData);
             sendActivationMail(client.getEmail());
             flash("success", "Registration proceeded successfully! Check your email for confirmation mail.");
             return ok();
@@ -78,7 +78,7 @@ public class UserProfile extends Controller {
             JPA.em().persist(role);
             if (businessUser) {
                 flash("info", "Fill in your personal data to create business account.");
-                return redirect(routes.UserProfile.newUserDataForm(newClient.getUserNumber()));
+                return redirect(routes.UserProfile.newUserDataForm(newClient.getClientId()));
             } else {
                 sendActivationMail(newClient.getEmail());
                 flash("success", "Registration proceeded successfully! Check your email for confirmation mail.");

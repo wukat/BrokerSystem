@@ -12,43 +12,19 @@ public class Image {
 
     @Id
     @GeneratedValue
-    @Column(name="imageId")
+    @Column(name="image_id")
     private Integer imageId;
 
     @ManyToOne
-    @JoinColumn(name="offer_offerId")
-    private Offer offer;
+    @JoinColumn(name="room_id")
+    private Room room;
 
-    @Column(name="content")
-    private String name;
-
-    public Integer getImageId() {
-        return imageId;
-    }
-
-    public void setImageId(Integer imageId) {
-        this.imageId = imageId;
-    }
-
-    public Offer getOffer() {
-        return offer;
-    }
-
-    public void setOffer(Offer offer) {
-        this.offer = offer;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String content) {
-        this.name = content;
-    }
+//    @Column(name="content")
+//    private String name;
 
     public Image(){}
-    public Image(Offer offer, String name){
-        this.offer = offer;
-        this.name = name;
+
+    public Image(Room room) {
+        this.room = room;
     }
 }

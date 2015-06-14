@@ -17,12 +17,24 @@ public class Offer {
 
     @Id
     @GeneratedValue
-    @Column(name="offerId")
+    @Column(name="offer_id")
+    private Integer keyOfferId;
+
+    @Column(name="internal_offer_id")
     private Integer offerId;
 
     @ManyToOne
-    @JoinColumn(name="clientPublisher_userNumber")
+    @JoinColumn(name="client_id")
     private Client clientPublisher;
+
+    @Column(name="date_from")
+    private Date dateFrom;
+
+    @Column(name="date_to")
+    private Date dateTo;
+
+    @Column(name="price")
+    private Double price;
 
     @Column(name="description")
     private String description;
@@ -33,29 +45,20 @@ public class Offer {
     @Column(name="visitCount")
     private Integer visitCount;
 
-    @Column(name="expiryDate")
-    private Date expiryDate;
-
-    @Column(name="price")
-    private Double price;
-
-    @Column(name="standard")
-    private Integer standard;
-
-    @Column(name="placesNumber")
-    private Integer placesNumber;
-
-    @Column(name="address")
-    private String address;
-
+    //TODO to tutaj nie moze byc
     @Column(name="hasImages")
     private boolean hasImages;
 
     @OneToMany(mappedBy="offer", cascade=CascadeType.ALL)
-    private List<Image> images;
+    private List<Image> offeredRooms;
 
-    @OneToMany(mappedBy="offer", cascade=CascadeType.ALL)
-    private List<Booking> bookings;
+    public Integer getKeyOfferId() {
+        return keyOfferId;
+    }
+
+    public void setKeyOfferId(Integer keyOfferId) {
+        this.keyOfferId = keyOfferId;
+    }
 
     public String getDescription() {
         return description;
@@ -105,14 +108,6 @@ public class Offer {
         this.visitCount = visitCount;
     }
 
-    public Date getExpiryDate() {
-        return expiryDate;
-    }
-
-    public void setExpiryDate(Date expiryDate) {
-        this.expiryDate = expiryDate;
-    }
-
     public Double getPrice() {
         return price;
     }
@@ -121,61 +116,46 @@ public class Offer {
         this.price = price;
     }
 
-    public Integer getStandard() {
-        return standard;
+    public Date getDateFrom() {
+        return dateFrom;
     }
 
-    public void setStandard(Integer standard) {
-        this.standard = standard;
+    public void setDateFrom(Date dateFrom) {
+        this.dateFrom = dateFrom;
     }
 
-    public Integer getPlacesNumber() {
-        return placesNumber;
+    public Date getDateTo() {
+        return dateTo;
     }
 
-    public void setPlacesNumber(Integer placesNumber) {
-        this.placesNumber = placesNumber;
+    public void setDateTo(Date dateTo) {
+        this.dateTo = dateTo;
     }
 
-    public String getAddress() {
-        return address;
+    public List<Image> getOfferedRooms() {
+        return offeredRooms;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public List<Image> getImages() {
-        return images;
-    }
-
-    public void setImages(List<Image> images) {
-        this.images = images;
-    }
-
-    public List<Booking> getBookings() {
-        return bookings;
-    }
-
-    public void setBookings(List<Booking> bookings) {
-        this.bookings = bookings;
+    public void setOfferedRooms(List<Image> offeredRooms) {
+        this.offeredRooms = offeredRooms;
     }
 
     public Offer(){}
-    public Offer(Client clientPublisher, Boolean premium, Integer visitCount, Date expiryDate, Double price, Integer standard, Integer placesNumber, String address){
+    public Offer(Client clientPublisher, Date dateFrom, Date dateTo, Double price, String description, Boolean premium, Integer visitCount, boolean hasImages, List<Image> offeredRooms) {
         this.clientPublisher = clientPublisher;
+        this.dateFrom = dateFrom;
+        this.dateTo = dateTo;
+        this.price = price;
+        this.description = description;
         this.premium = premium;
         this.visitCount = visitCount;
-        this.expiryDate = expiryDate;
-        this.price = price;
-        this.standard = standard;
-        this.placesNumber = placesNumber;
-        this.address = address;
+        this.hasImages = hasImages;
+        this.offeredRooms = offeredRooms;
     }
 
     public static LinkedList<Offer> getAllActual() {
         LinkedList<Offer> result = new LinkedList<>();
-        for (Object el : JPA.em().createQuery("FROM Offer WHERE expiryDate > current_date AND hasImages=true").getResultList()) {
+        for (Object el : JPA.em().createQuery("FROM Offer WHERE dateTo > current_date AND hasImages=true").getResultList()) {
             result.add((Offer) el);
         }
         return result;
@@ -198,13 +178,15 @@ public class Offer {
     }
 
     public String validate() {
-        if (expiryDate.before(new Date())) {
-            return "Expiry date must be in future";
-        } else if (placesNumber <= 0) {
-            return "Number of places must be greater than 0";
-        } else if (price <= 0) {
-            return "Price must be greater than 0";
-        }
+        //TODO repair this method :(
+//        if (expiryDate.before(new Date())) {
+//            return "Expiry date must be in future";
+//        } else if (placesNumber <= 0) {
+//            return "Number of places must be greater than 0";
+//        } else if (price <= 0) {
+//            return "Price must be greater than 0";
+//        }
         return null;
     }
+
 }

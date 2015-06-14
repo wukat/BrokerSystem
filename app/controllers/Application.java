@@ -45,7 +45,8 @@ public class Application extends Controller {
 //        System.out.println(a.getImages().size());
 //        JPA.em().unwrap(Session.class).persist(testUser1);
 
-        return ok(index.render("Your new application is ready."));
+        //return ok(index.render("Your new application is ready."));
+        return ok();
     }
 
 }

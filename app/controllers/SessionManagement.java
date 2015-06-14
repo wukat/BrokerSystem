@@ -27,10 +27,8 @@ public class SessionManagement {
 
     private static String getPart(Http.Session session, int i) {
         String[] parts = getParts(session);
-        if (parts != null) {
-            if (parts.length > i)
-                return parts[i];
-        }
+        if (parts != null && parts.length > i)
+            return parts[i];
         return null;
     }
 
@@ -39,10 +37,6 @@ public class SessionManagement {
     }
 
     public static boolean isOk(Http.Session session) {
-        String ok = getPart(session, 0);
-        if (ok != null && ok.equals("ok")) {
-            return true;
-        }
-        return false;
+        return getPart(session, 0).equals("ok");
     }
 }

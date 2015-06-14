@@ -8,7 +8,7 @@
     <non-jta-data-source>DefaultDS</non-jta-data-source>
 
     <class>models.Client</class>
-    <class>models.UserData</class>
+    <class>models.ClientData</class>
     <class>models.Role</class>
     <class>models.Message</class>
     <class>models.Booking</class>

@@ -8,8 +8,8 @@ import java.io.Serializable;
  * Created by magdalena on 01.06.15.
  */
 @Entity
-@Table(name = "user_data")
-public class UserData implements Serializable {// extends Model {
+@Table(name = "client_data")
+public class ClientData implements Serializable {// extends Model {
 
     @Id
     @OneToOne
@@ -67,8 +67,8 @@ public class UserData implements Serializable {// extends Model {
         this.address = address;
     }
 
-    public UserData(){}
-    public UserData(Client client, String name, String telephone, String address){
+    public ClientData(){}
+    public ClientData(Client client, String name, String telephone, String address){
         this.client = client;
         this.name = name;
         this.telephone = telephone;

@@ -15,8 +15,8 @@ public class Client implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "userNumber", unique = true, nullable = false)
-    private Integer userNumber;
+    @Column(name = "client_id", unique = true, nullable = false)
+    private Integer clientId;
 
     @Column(name = "active", nullable = false, columnDefinition = "Boolean default false")
     private Boolean active = false;
@@ -31,12 +31,12 @@ public class Client implements Serializable {
     private String confirmPassword;
 
     @OneToOne(mappedBy = "client", cascade = CascadeType.ALL)
-    @JoinColumn(name = "client_userNumber")
+    @JoinColumn(name = "client_id")
     private Role role;
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "client", cascade = CascadeType.ALL)
-    @JoinColumn(name = "client_userNumber")
-    private UserData userData;
+    @JoinColumn(name = "client_id")
+    private ClientData clientData;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "clientSender", cascade = CascadeType.ALL)
     private Set<Message> messagesSent;
@@ -50,12 +50,17 @@ public class Client implements Serializable {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "client", cascade = CascadeType.ALL)
     private Set<Booking> bookings;
 
-    public Integer getUserNumber() {
-        return userNumber;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "clientPublisher", cascade = CascadeType.ALL)
+    private Set<Booking> hotelsPublished;
+
+
+
+    public Integer getClientId() {
+        return clientId;
     }
 
-    public void setUserNumber(Integer userNumber) {
-        this.userNumber = userNumber;
+    public void setClientId(Integer userNumber) {
+        this.clientId = userNumber;
     }
 
     public String getConfirmPassword() {
@@ -98,12 +103,12 @@ public class Client implements Serializable {
         this.role = role;
     }
 
-    public UserData getUserData() {
-        return userData;
+    public ClientData getClientData() {
+        return clientData;
     }
 
-    public void setUserData(UserData userData) {
-        this.userData = userData;
+    public void setClientData(ClientData clientData) {
+        this.clientData = clientData;
     }
 
     public Set<Message> getMessagesSent() {
@@ -146,20 +151,20 @@ public class Client implements Serializable {
         this.password = password;
     }
 
-    public Client(Integer userNumber, Boolean active, String email, String password) {
+    public Client(Integer clientId, Boolean active, String email, String password) {
         this.email = email;
         this.password = password;
         this.active = active;
-        this.userNumber = userNumber;
+        this.clientId = clientId;
     }
 
-    public Client(String email, String password, String confirmPassword, Boolean active, Role role, UserData userData, Set<Message> messagesSent, Set<Message> messagesReceived, Set<Offer> offersPublished, Set<Booking> bookings) {
+    public Client(String email, String password, String confirmPassword, Boolean active, Role role, ClientData clientData, Set<Message> messagesSent, Set<Message> messagesReceived, Set<Offer> offersPublished, Set<Booking> bookings) {
         this.email = email;
         this.password = password;
         this.confirmPassword = confirmPassword;
         this.active = active;
         this.role = role;
-        this.userData = userData;
+        this.clientData = clientData;
         this.messagesSent = messagesSent;
         this.messagesReceived = messagesReceived;
         this.offersPublished = offersPublished;
@@ -173,7 +178,7 @@ public class Client implements Serializable {
                 ", password='" + password + '\'' +
                 ", active=" + active +
                 ", role=" + role +
-                ", userData=" + userData +
+                ", userData=" + clientData +
                 ", messagesSent=" + messagesSent +
                 ", messagesReceived=" + messagesReceived +
                 ", offersPublished=" + offersPublished +
@@ -207,7 +212,7 @@ public class Client implements Serializable {
 
     public static Integer getClientId(String email) {
         try {
-            Object result = JPA.em().createQuery("SELECT c.userNumber FROM Client c WHERE c.email =:email").setParameter("email", email).getSingleResult();
+            Object result = JPA.em().createQuery("SELECT c.clientId FROM Client c WHERE c.email =:email").setParameter("email", email).getSingleResult();
             if (result != null) {
                 return (Integer) result;
             }
@@ -234,7 +239,7 @@ public class Client implements Serializable {
     }
 
     public static void activateClient(Integer id) {
-        JPA.em().createQuery("UPDATE Client c SET active=true where c.userNumber=:id").setParameter("id", id).executeUpdate();
+        JPA.em().createQuery("UPDATE Client c SET active=true where c.clientId=:id").setParameter("id", id).executeUpdate();
     }
 
     public static boolean checkActive(String email) {
