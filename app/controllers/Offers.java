@@ -81,7 +81,7 @@ public class Offers extends Controller {
             offer.setClientPublisher(Client.getClientByEmail(email));
             JPA.em().persist(offer);
             flash("info", "Upload photos to save offer");
-            return redirect(routes.Offers.upload(offer.getOfferId()));
+            return redirect(routes.Offers.uploadForm(offer.getOfferId()));
         }
         flash("error", "You are not allowed to create new offers.");
         return redirect(routes.Application.index());
@@ -106,9 +106,9 @@ public class Offers extends Controller {
         String email = SessionManagement.getEmail(session());
         if (offer != null && offer.getClientPublisher().getEmail().equals(email)) {
             Http.MultipartFormData body = request().body().asMultipartFormData();
-            List<Http.MultipartFormData.FilePart> file = body.getFiles();
+            List<Http.MultipartFormData.FilePart> files = body.getFiles();
             Offer.activateOffer(offerId);
-            for (Http.MultipartFormData.FilePart p : file) {
+            for (Http.MultipartFormData.FilePart p : files) {
                 Image img = new Image();
                 img.setOffer(offer);
                 img.setName("");
