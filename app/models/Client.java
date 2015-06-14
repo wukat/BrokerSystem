@@ -51,7 +51,7 @@ public class Client implements Serializable {
     private Set<Booking> bookings;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "clientPublisher", cascade = CascadeType.ALL)
-    private Set<Booking> hotelsPublished;
+    private Set<Hotel> hotelsPublished;
 
 
 
@@ -143,19 +143,21 @@ public class Client implements Serializable {
         this.bookings = bookings;
     }
 
+    public Set<Hotel> getHotelsPublished() {
+        return hotelsPublished;
+    }
+
+    public void setHotelsPublished(Set<Hotel> hotelsPublished) {
+        this.hotelsPublished = hotelsPublished;
+    }
+
     public Client() {
     }
 
-    public Client(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
-
-    public Client(Integer clientId, Boolean active, String email, String password) {
+    public Client(String email, String password, Boolean active) {
         this.email = email;
         this.password = password;
         this.active = active;
-        this.clientId = clientId;
     }
 
     public Client(String email, String password, String confirmPassword, Boolean active, Role role, ClientData clientData, Set<Message> messagesSent, Set<Message> messagesReceived, Set<Offer> offersPublished, Set<Booking> bookings) {

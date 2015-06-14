@@ -41,12 +41,11 @@ public class Room {
 
 
     public Room(){}
-    public Room(Integer roomId, Hotel hotel, Integer bedsNumber, Boolean bathroom, List<OfferedRoom> offeredRooms) {
-        this.roomId = roomId;
+    public Room(Integer internalRoomId, Hotel hotel, Integer bedsNumber, Boolean bathroom) {
+        this.internalRoomId = internalRoomId;
         this.hotel = hotel;
         this.bedsNumber = bedsNumber;
         this.bathroom = bathroom;
-        this.offeredRooms = offeredRooms;
     }
 
     public Integer getRoomId() {

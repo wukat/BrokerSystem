@@ -45,12 +45,8 @@ public class Offer {
     @Column(name="visitCount")
     private Integer visitCount;
 
-    //TODO to tutaj nie moze byc
-    @Column(name="hasImages")
-    private boolean hasImages;
-
     @OneToMany(mappedBy="offer", cascade=CascadeType.ALL)
-    private List<Image> offeredRooms;
+    private List<OfferedRoom> offeredRooms;
 
     public Integer getKeyOfferId() {
         return keyOfferId;
@@ -66,14 +62,6 @@ public class Offer {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public boolean isHasImages() {
-        return hasImages;
-    }
-
-    public void setHasImages(boolean hasImages) {
-        this.hasImages = hasImages;
     }
 
     public Integer getOfferId() {
@@ -132,16 +120,16 @@ public class Offer {
         this.dateTo = dateTo;
     }
 
-    public List<Image> getOfferedRooms() {
+    public List<OfferedRoom> getOfferedRooms() {
         return offeredRooms;
     }
 
-    public void setOfferedRooms(List<Image> offeredRooms) {
+    public void setOfferedRooms(List<OfferedRoom> offeredRooms) {
         this.offeredRooms = offeredRooms;
     }
 
     public Offer(){}
-    public Offer(Client clientPublisher, Date dateFrom, Date dateTo, Double price, String description, Boolean premium, Integer visitCount, boolean hasImages, List<Image> offeredRooms) {
+    public Offer(Client clientPublisher, Date dateFrom, Date dateTo, Double price, String description, Boolean premium, Integer visitCount) {
         this.clientPublisher = clientPublisher;
         this.dateFrom = dateFrom;
         this.dateTo = dateTo;
@@ -149,8 +137,6 @@ public class Offer {
         this.description = description;
         this.premium = premium;
         this.visitCount = visitCount;
-        this.hasImages = hasImages;
-        this.offeredRooms = offeredRooms;
     }
 
     public static LinkedList<Offer> getAllActual() {

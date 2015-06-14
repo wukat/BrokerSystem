@@ -18,7 +18,7 @@ public class OfferedRoom {
     @Id
     @GeneratedValue
     @Column(name = "offered_room_id")
-    private Integer keyRoomId;
+    private Integer offeredRoomId;
 
     @ManyToOne
     @JoinColumn(name = "hotel_id")
@@ -43,12 +43,12 @@ public class OfferedRoom {
         this.offer = offer;
     }
 
-    public Integer getKeyRoomId() {
-        return keyRoomId;
+    public Integer getOfferedRoomId() {
+        return offeredRoomId;
     }
 
-    public void setKeyRoomId(Integer keyRoomId) {
-        this.keyRoomId = keyRoomId;
+    public void setOfferedRoomId(Integer offeredRoomId) {
+        this.offeredRoomId = offeredRoomId;
     }
 
     public Hotel getHotel() {
@@ -73,6 +73,14 @@ public class OfferedRoom {
 
     public void setOffer(Offer offer) {
         this.offer = offer;
+    }
+
+    public List<Booking> getBookings() {
+        return bookings;
+    }
+
+    public void setBookings(List<Booking> bookings) {
+        this.bookings = bookings;
     }
 }
 

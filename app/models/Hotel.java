@@ -18,10 +18,10 @@ public class Hotel {
     @Id
     @GeneratedValue
     @Column(name="hotel_id")
-    private Integer keyHotelId;
+    private Integer hotelId;
 
     @Column(name="internal_hotel_id")
-    private Integer hotelId;
+    private Integer internalHotelId;
 
     @ManyToOne
     @JoinColumn(name="client_id")
@@ -44,30 +44,29 @@ public class Hotel {
 
 
     public Hotel(){}
-    public Hotel(Integer hotelId, Client clientPublisher, String name, String city, String address, Integer standard, List<Room> rooms) {
-        this.hotelId = hotelId;
+    public Hotel(Integer internalHotelId, Client clientPublisher, String name, String city, String address, Integer standard) {
+        this.internalHotelId = internalHotelId;
         this.clientPublisher = clientPublisher;
         this.name = name;
         this.city = city;
         this.address = address;
         this.standard = standard;
-        this.rooms = rooms;
-    }
-
-    public Integer getKeyHotelId() {
-        return keyHotelId;
-    }
-
-    public void setKeyHotelId(Integer keyHotelId) {
-        this.keyHotelId = keyHotelId;
     }
 
     public Integer getHotelId() {
         return hotelId;
     }
 
-    public void setHotelId(Integer hotelId) {
+    public void setHotelId(Integer keyHotelId) {
         this.hotelId = hotelId;
+    }
+
+    public Integer getInternalHotelId() {
+        return internalHotelId;
+    }
+
+    public void setInternalHotelId(Integer hotelId) {
+        this.internalHotelId = internalHotelId;
     }
 
     public Client getClientPublisher() {
