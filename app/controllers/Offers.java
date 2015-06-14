@@ -78,7 +78,7 @@ public class Offers extends Controller {
             Offer offer = offerForm.get();
             offer.setPremium(offerForm.data().get("premium") != null);
             offer.setVisitCount(0);
-            offer.setHasImages(false);
+            //offer.setHasImages(false);
             offer.setClientPublisher(Client.getClientByEmail(email));
             JPA.em().persist(offer);
             flash("info", "Upload photos to save offer");
