@@ -29,11 +29,11 @@
             <div class="carousel-inner" role="listbox">
 
                 <div class="item active">
-                    <img src="@routes.Assets.at("images/products/".concat(offer.getImages.get(0).getImageId.toString))" height="350px">
+                    <img src="@routes.Assets.at("images/products".concat(offer.getImages.get(0).getImageId.toString))" height="350px">
                 </div>
                 @for(i <- 1 to offer.getImages.size - 1) {
                     <div class="item">
-                        <img src="@routes.Assets.at("images/products/".concat(offer.getImages.get(i).getImageId.toString))" height="350px">
+                        <img src="@routes.Assets.at("images/products".concat(offer.getImages.get(i).getImageId.toString))" height="350px">
                     </div>
                 }
             </div>

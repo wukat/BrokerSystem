@@ -6,25 +6,25 @@
 GET         /                                      controllers.Application.index()
 
 # Map static resources from the /public folder to the /assets URL path
-#GET         /assets/*file                          controllers.Assets.at(path="/public", file)
-#
-#GET         /authentication                        controllers.Authentication.login()
-#POST        /authentication                        controllers.Authentication.authenticate()
-#GET         /logout                                controllers.Authentication.logout()
-## my ideas
-#
-#GET         /users/new                             controllers.UserProfile.newUserForm()
-#POST        /users                                 controllers.UserProfile.newUser()
-#GET         /users/$id<[0-9]+>/confirm             controllers.UserProfile.confirm(id: Integer)
-#GET         /users/$id<[0-9]+>/personalData        controllers.UserProfile.newUserDataForm(id: Integer)
-#POST        /users/$id<[0-9]+>/personalData        controllers.UserProfile.newUserData(id: Integer)
-#
-#GET         /offers                                controllers.Offers.all()
-#GET         /offers/new                            controllers.Offers.newOfferForm()
-#GET         /offers/$id<[0-9]+>/images             controllers.Offers.uploadForm(id: Integer)
-#POST        /offers/$id<[0-9]+>/images             controllers.Offers.upload(id: Integer)
-#POST        /offers                                controllers.Offers.newOffer()
-#GET         /offers/$id<[0-9]+>                    controllers.Offers.seeOffer(id: Integer)
+GET         /assets/*file                          controllers.Assets.at(path="/public", file)
+
+GET         /authentication                        controllers.Authentication.login()
+POST        /authentication                        controllers.Authentication.authenticate()
+GET         /logout                                controllers.Authentication.logout()
+# my ideas
+
+GET         /users/new                             controllers.UserProfile.newUserForm()
+POST        /users                                 controllers.UserProfile.newUser()
+GET         /users/$id<[0-9]+>/confirm             controllers.UserProfile.confirm(id: Integer)
+GET         /users/$id<[0-9]+>/personalData        controllers.UserProfile.newUserDataForm(id: Integer)
+POST        /users/$id<[0-9]+>/personalData        controllers.UserProfile.newUserData(id: Integer)
+
+GET         /offers                                controllers.Offers.all()
+GET         /offers/new                            controllers.Offers.newOfferForm()
+GET         /offers/$id<[0-9]+>/images             controllers.Offers.uploadForm(id: Integer)
+POST        /offers/$id<[0-9]+>/images             controllers.Offers.upload(id: Integer)
+POST        /offers                                controllers.Offers.newOffer()
+GET         /offers/$id<[0-9]+>                    controllers.Offers.seeOffer(id: Integer)
 
 #GET         /users/$id<[0-9]+>                      // user profile (with offers and bookings)
 # oferty w profilu pojawiają się tylko przez miesiac od wygasniecia

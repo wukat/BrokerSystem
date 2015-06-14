@@ -50,7 +50,8 @@ public class Offers extends Controller {
         }
         offer.setVisitCount(offer.getVisitCount() + 1);
         JPA.em().flush();
-        return ok(offerView.render(offer));
+//        return ok(offerView.render(offer));
+        return ok();
     }
 
     @Security.Authenticated(Secured.class)
@@ -102,25 +103,25 @@ public class Offers extends Controller {
     @Security.Authenticated(Secured.class)
     @Transactional
     public static Result upload(Integer offerId) {
-        Offer offer = Offer.getOfferById(offerId);
-        String email = SessionManagement.getEmail(session());
-        if (offer != null && offer.getClientPublisher().getEmail().equals(email)) {
-            Http.MultipartFormData body = request().body().asMultipartFormData();
-            List<Http.MultipartFormData.FilePart> files = body.getFiles();
-            Offer.activateOffer(offerId);
-            for (Http.MultipartFormData.FilePart p : files) {
-                Image img = new Image();
-                img.setOffer(offer);
-                img.setName("");
-                JPA.em().persist(img);
-                try {
-                    FileUtils.copyFile(p.getFile(), new File("public/images/products", img.getImageId().toString()));
-                } catch (IOException ioe) {
-                    Logger.debug("sth wrong with image");
-                }
-            }
-            return ok();
-        }
+//        Offer offer = Offer.getOfferById(offerId);
+//        String email = SessionManagement.getEmail(session());
+//        if (offer != null && offer.getClientPublisher().getEmail().equals(email)) {
+//            Http.MultipartFormData body = request().body().asMultipartFormData();
+//            List<Http.MultipartFormData.FilePart> files = body.getFiles();
+//            Offer.activateOffer(offerId);
+//            for (Http.MultipartFormData.FilePart p : files) {
+//                Image img = new Image();
+//                img.setOffer(offer);
+//                img.setName("");
+//                JPA.em().persist(img);
+//                try {
+//                    FileUtils.copyFile(p.getFile(), new File("public/images/products", img.getImageId().toString()));
+//                } catch (IOException ioe) {
+//                    Logger.debug("sth wrong with image");
+//                }
+//            }
+//            return ok();
+//        }
         flash("error", "You are not allowed to upload images for this offer");
         return redirect(routes.Application.index());
     }

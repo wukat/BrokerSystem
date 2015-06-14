@@ -28,10 +28,10 @@
                 @for(offer <- offers) {
                     <tr data-link="row" class="rowlink">
                         <td><a href=@(routes.Offers.seeOffer(offer.getOfferId))></a>@offer.getClientPublisher.getClientData.getName</td>
-                        <td>@offer.getAddress</td>
-                        <td>@offer.getStandard</td>
-                        <td>@offer.getPlacesNumber</td>
-                        <td>@offer.getPrice</td>
+                        @*<td>@offer.getAddress</td>*@
+                        @*<td>@offer.getStandard</td>*@
+                        @*<td>@offer.getPlacesNumber</td>*@
+                        @*<td>@offer.getPrice</td>*@
                     </tr>
                 }
                 </tbody>
