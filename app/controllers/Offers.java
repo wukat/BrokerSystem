@@ -57,8 +57,7 @@ public class Offers extends Controller {
     @Security.Authenticated(Secured.class)
     @Transactional(readOnly = true)
     public static Result newOfferForm() {
-        Role clientRole = Client.getClientRole(SessionManagement.getEmail(session()));
-        if (clientRole != null && clientRole.getRole().equals("business")) {
+        if (Client.isBusinessClient(SessionManagement.getEmail(session()))) {
             return ok(createOffer.render(form(Offer.class)));
         }
         flash("error", "You are not allowed to create new offers.");
@@ -73,8 +72,7 @@ public class Offers extends Controller {
             return badRequest(createOffer.render(offerForm));
         }
         String email = SessionManagement.getEmail(session());
-        Role clientRole = Client.getClientRole(email);
-        if (clientRole != null && clientRole.getRole().equals("business")) {
+        if (Client.isBusinessClient(email)) {
             Offer offer = offerForm.get();
             offer.setPremium(offerForm.data().get("premium") != null);
             offer.setVisitCount(0);

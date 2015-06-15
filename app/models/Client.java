@@ -1,5 +1,6 @@
 package models;
 
+import controllers.SessionManagement;
 import org.mindrot.jbcrypt.BCrypt;
 import play.Logger;
 import play.db.jpa.JPA;
@@ -258,5 +259,14 @@ public class Client implements Serializable {
 
     public static Client getClientByEmail(String email) {
         return (Client) JPA.em().createQuery("SELECT c FROM Client c WHERE c.email =:email").setParameter("email", email).getSingleResult();
+    }
+
+    public static boolean isClient(Integer id) {
+        return getClientById(id) != null;
+    }
+
+    public static boolean isBusinessClient(String email) {
+        Role clientRole = Client.getClientRole(email);
+        return (clientRole != null && clientRole.getRole().equals("business"));
     }
 }

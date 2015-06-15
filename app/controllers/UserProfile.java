@@ -36,7 +36,7 @@ public class UserProfile extends Controller {
 
     @Transactional(readOnly = true)
     public static Result newUserDataForm(Integer id) {
-        if (Client.getClientById(id) != null) {
+        if (Client.isClient(id)) {
             return ok(
                     personalData.render(form(ClientData.class), id)
             );
