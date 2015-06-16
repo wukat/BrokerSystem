@@ -32,7 +32,7 @@
         <!-- Drop and re-create the database schema on startup -->
         <property name="hbm2ddl.auto">update</property>
 
-        <mapping class="models.Booking"/>
+        <mapping class="models.InnerBooking"/>
         <mapping class="models.Hotel"/>
         <mapping class="models.Image"/>
         <mapping class="models.Offer"/>

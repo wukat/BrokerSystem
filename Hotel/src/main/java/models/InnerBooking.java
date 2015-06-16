@@ -10,7 +10,7 @@ import java.util.Date;
 
 @Entity
 @Table(name="bookings")
-public class Booking {
+public class InnerBooking {
 
     @Column(name = "booking_id")
     private Long bookingId;
@@ -20,34 +20,21 @@ public class Booking {
     @Column(name = "internal_booking_id")
     private Long internalBookingId;
 
-    @Transient
-    private Client client;
-
-    @XmlTransient
-    @ManyToOne
-    @JoinColumn(name = "offered_room_id")
-    private OfferedRoom offeredRoom;
-
     @Column(name="date_from")
     private Date dateFrom;
 
     @Column(name="date_to")
     private Date dateTo;
 
-    @Column(name = "cancelled")
-    private Boolean cancelled;
+    @ManyToOne
+    @JoinColumn(name = "hotel_id")
+    private Hotel hotel;
 
+    @ManyToOne
+    @JoinColumn(name = "room_id")
+    private Room room;
 
-    public Booking(){}
-
-    public Booking(Long bookingId, Client client, OfferedRoom offeredRoom, Date dateFrom, Date dateTo, Boolean cancelled) {
-        this.bookingId = bookingId;
-        this.client = client;
-        this.offeredRoom = offeredRoom;
-        this.dateFrom = dateFrom;
-        this.dateTo = dateTo;
-        this.cancelled = cancelled;
-    }
+    public InnerBooking(){}
 
     public Long getInternalBookingId() {
         return internalBookingId;
@@ -63,23 +50,6 @@ public class Booking {
 
     public void setBookingId(Long bookingId) {
         this.bookingId = bookingId;
-    }
-
-    public Client getClient() {
-        return client;
-    }
-
-    public void setClient(Client client) {
-        this.client = client;
-    }
-
-    @XmlTransient
-    public OfferedRoom getOfferedRoom() {
-        return offeredRoom;
-    }
-
-    public void setOfferedRoom(OfferedRoom offeredRoom) {
-        this.offeredRoom = offeredRoom;
     }
 
     public Date getDateFrom() {
@@ -98,11 +68,27 @@ public class Booking {
         this.dateTo = dateTo;
     }
 
-    public Boolean getCancelled() {
-        return cancelled;
+    public Room getRoom() {
+        return room;
     }
 
-    public void setCancelled(Boolean cancelled) {
-        this.cancelled = cancelled;
+    public void setRoom(Room room) {
+        this.room = room;
+    }
+
+    public Hotel getHotel() {
+        return hotel;
+    }
+
+    public void setHotel(Hotel hotel) {
+        this.hotel = hotel;
+    }
+
+    public InnerBooking(Long bookingId, Date dateFrom, Date dateTo, Hotel hotel, Room room) {
+        this.bookingId = bookingId;
+        this.dateFrom = dateFrom;
+        this.dateTo = dateTo;
+        this.hotel = hotel;
+        this.room = room;
     }
 }

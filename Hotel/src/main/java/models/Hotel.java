@@ -1,6 +1,7 @@
 package models;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlTransient;
 import java.util.List;
 
 /**
@@ -37,6 +38,9 @@ public class Hotel {
     @OneToMany(mappedBy="hotel", cascade= CascadeType.ALL)
     private List<Room> rooms;
 
+    @XmlTransient
+    @OneToMany(mappedBy="hotel", cascade= CascadeType.ALL)
+    private List<InnerBooking> innerBooking;
 
     public Hotel(){}
     public Hotel(Integer hotelId, Client clientPublisher, String name, String city, String address, Integer standard) {
@@ -110,5 +114,14 @@ public class Hotel {
 
     public void setRooms(List<Room> rooms) {
         this.rooms = rooms;
+    }
+
+    @XmlTransient
+    public List<InnerBooking> getInnerBooking() {
+        return innerBooking;
+    }
+
+    public void setInnerBooking(List<InnerBooking> innerBooking) {
+        this.innerBooking = innerBooking;
     }
 }

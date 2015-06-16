@@ -27,6 +27,9 @@ public class ClientData implements Serializable {// extends Model {
     @Column(name="paymentData")
     private String paymentData;
 
+    @Column(name="endpoint")
+    private String endpoint;
+
     public String getPaymentData() {
         return paymentData;
     }
@@ -65,6 +68,14 @@ public class ClientData implements Serializable {// extends Model {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getEndpoint() {
+        return endpoint;
+    }
+
+    public void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
     }
 
     public ClientData(){}

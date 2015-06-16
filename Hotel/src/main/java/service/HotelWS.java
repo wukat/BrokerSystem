@@ -59,33 +59,28 @@ public class HotelWS {
 
     private LinkedList<Date> getBookedDaysList(Integer roomId, Integer hotelId) {
         Session s = getSession();
-        List rooms = s.createQuery("FROM OfferedRoom WHERE hotel.internalHotelId = :hotelId AND room.internalRoomId = :roomId").setInteger("roomId", roomId).setInteger("hotelId", hotelId).list();
-        if (rooms.size() != 1) {
-            s.close();
-            return new LinkedList<>();
-        } else {
-            LinkedList<Date> booked = new LinkedList<>();
-            OfferedRoom room = (OfferedRoom) rooms.get(0);
-            Date today = new Date();
-            today.setTime(today.getTime() - dayInMiliSecs);
-            Date twoMonthsLater = new Date();
-            twoMonthsLater.setTime(twoMonthsLater.getTime() + 61 * dayInMiliSecs);
-            for (Booking booking : room.getBookings()) {
-                Date begin = booking.getDateFrom();
-                Date end = booking.getDateTo();
-                end.setTime(end.getTime() + dayInMiliSecs);
-                while (begin.before(booking.getDateTo())) {
-                    if (begin.after(today) && begin.before(twoMonthsLater)) {
-                        Date newDate = new Date();
-                        newDate.setTime(begin.getTime());
-                        booked.add(newDate);
-                    }
-                    begin.setTime(begin.getTime() + dayInMiliSecs);
+        List bookings = s.createQuery("FROM InnerBooking WHERE hotel.internalHotelId = :hotelId AND room.internalRoomId = :roomId").setInteger("roomId", roomId).setInteger("hotelId", hotelId).list();
+        LinkedList<Date> booked = new LinkedList<>();
+        Date today = new Date();
+        today.setTime(today.getTime() - dayInMiliSecs);
+        Date twoMonthsLater = new Date();
+        twoMonthsLater.setTime(twoMonthsLater.getTime() + 61 * dayInMiliSecs);
+        for (Object innerBookingObj : bookings) {
+            InnerBooking innerBooking = (InnerBooking) innerBookingObj;
+            Date begin = innerBooking.getDateFrom();
+            Date end = innerBooking.getDateTo();
+            end.setTime(end.getTime() + dayInMiliSecs);
+            while (begin.before(innerBooking.getDateTo())) {
+                if (begin.after(today) && begin.before(twoMonthsLater)) {
+                    Date newDate = new Date();
+                    newDate.setTime(begin.getTime());
+                    booked.add(newDate);
                 }
+                begin.setTime(begin.getTime() + dayInMiliSecs);
             }
-            s.close();
-            return booked;
         }
+        s.close();
+        return booked;
     }
 
     @WebMethod
@@ -108,12 +103,12 @@ public class HotelWS {
                 s.close();
                 return -1L;
             } else {
-                Booking booking = new Booking(null, null, (OfferedRoom) rooms.get(0), from, to, false);
+                InnerBooking innerBooking = new InnerBooking(null, from, to, ((OfferedRoom) rooms.get(0)).getHotel(), ((OfferedRoom) rooms.get(0)).getRoom());
                 Transaction t = s.beginTransaction();
-                s.persist(booking);
+                s.persist(innerBooking);
                 t.commit();
                 s.close();
-                return booking.getInternalBookingId();
+                return innerBooking.getInternalBookingId();
             }
         }
     }
@@ -121,7 +116,12 @@ public class HotelWS {
     @WebMethod
     public void cancelBooking(Long internalBookingId) {
         Session s = getSession();
-        s.createQuery("DELETE Booking WHERE internalBookingId = :bookingId").setLong("bookingId", internalBookingId).list();
+        List bookings = s.createQuery("FROM InnerBooking WHERE internalBookingId = :bookingId").setLong("bookingId", internalBookingId).list();
+        if (bookings.size() == 1) {
+            Transaction t = s.beginTransaction();
+            s.delete(bookings.get(0));
+            t.commit();
+        }
         s.close();
     }
 
@@ -145,7 +145,7 @@ public class HotelWS {
         OfferedRoom testOfferedRoom2 = new OfferedRoom(testHotel1, testRoom2, testOffer1);
         OfferedRoom testOfferedRoom3 = new OfferedRoom(testHotel1, testRoom3, testOffer1);
 
-        Booking testBooking1 = new Booking(null, null, testOfferedRoom3, new Date(), new Date(), false);
+        InnerBooking testInnerBooking1 = new InnerBooking(null, new Date(), new Date(), testOfferedRoom3.getHotel(), testOfferedRoom3.getRoom());
 
         Session s = getSession();
         Transaction t = s.beginTransaction();
@@ -160,7 +160,7 @@ public class HotelWS {
         s.persist(testOfferedRoom1);
         s.persist(testOfferedRoom2);
         s.persist(testOfferedRoom3);
-        s.persist(testBooking1);
+        s.persist(testInnerBooking1);
         s.persist(testHotel1);
         t.commit();
         s.close();

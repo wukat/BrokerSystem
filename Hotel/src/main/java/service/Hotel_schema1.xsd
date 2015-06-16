@@ -122,6 +122,7 @@
 
   <xs:complexType name="image">
     <xs:sequence>
+      <xs:element name="content" type="xs:string" minOccurs="0"/>
       <xs:element name="imageId" type="xs:int" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>

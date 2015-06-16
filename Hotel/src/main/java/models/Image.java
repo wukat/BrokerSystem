@@ -21,8 +21,8 @@ public class Image {
     @JoinColumn(name = "room_id")
     private Room room;
 
-//    @Column(name="content")
-//    private String name;
+    @Column(name="content")
+    private String content;
 
     @XmlTransient
     public Room getRoom() {
@@ -42,10 +42,23 @@ public class Image {
         this.imageId = imageId;
     }
 
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
     public Image() {
     }
 
     public Image(Room room) {
         this.room = room;
+    }
+
+    public Image(Room room, String content) {
+        this.room = room;
+        this.content = content;
     }
 }

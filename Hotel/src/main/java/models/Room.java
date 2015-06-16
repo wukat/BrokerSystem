@@ -38,6 +38,9 @@ public class Room {
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<Image> images;
 
+    @XmlTransient
+    @OneToMany(mappedBy="room", cascade= CascadeType.ALL)
+    private List<InnerBooking> innerBooking;
 
     public Room(){}
 
@@ -106,5 +109,14 @@ public class Room {
 
     public void setOfferedRooms(List<OfferedRoom> offeredRooms) {
         this.offeredRooms = offeredRooms;
+    }
+
+    @XmlTransient
+    public List<InnerBooking> getInnerBooking() {
+        return innerBooking;
+    }
+
+    public void setInnerBooking(List<InnerBooking> innerBooking) {
+        this.innerBooking = innerBooking;
     }
 }

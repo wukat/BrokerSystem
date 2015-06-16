@@ -19,12 +19,17 @@ public class Image {
     @JoinColumn(name="room_id")
     private Room room;
 
-//    @Column(name="content")
-//    private String name;
+    @Column(name="content")
+    private String content;
 
     public Image(){}
 
     public Image(Room room) {
+        this.room = room;
+    }
+
+    public Image(String content, Room room) {
+        this.content = content;
         this.room = room;
     }
 }

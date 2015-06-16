@@ -2,7 +2,6 @@ package models;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
-import java.util.List;
 
 /**
  * Created by magdalena on 01.06.15.
@@ -29,11 +28,6 @@ public class OfferedRoom {
     @ManyToOne
     @JoinColumn(name = "offer_id")
     private Offer offer;
-
-    @XmlTransient
-    @OneToMany(mappedBy = "offeredRoom", cascade = CascadeType.ALL)
-    private List<Booking> bookings;
-
 
     public OfferedRoom(){}
     public OfferedRoom(Hotel hotel, Room room, Offer offer) {
@@ -73,15 +67,6 @@ public class OfferedRoom {
 
     public void setOffer(Offer offer) {
         this.offer = offer;
-    }
-
-    @XmlTransient
-    public List<Booking> getBookings() {
-        return bookings;
-    }
-
-    public void setBookings(List<Booking> bookings) {
-        this.bookings = bookings;
     }
 }
 
