@@ -16,6 +16,9 @@ public class Booking {
     @Column(name = "booking_id")
     private Long bookingId;
 
+    @Column(name = "internal_booking_id")
+    private Long internalBookingId;
+
     @ManyToOne
     @JoinColumn(name = "client")
     private Client client;
@@ -41,6 +44,14 @@ public class Booking {
         this.dateFrom = dateFrom;
         this.dateTo = dateTo;
         this.cancelled = cancelled;
+    }
+
+    public Long getInternalBookingId() {
+        return internalBookingId;
+    }
+
+    public void setInternalBookingId(Long internalBookingId) {
+        this.internalBookingId = internalBookingId;
     }
 
     public Long getBookingId() {
