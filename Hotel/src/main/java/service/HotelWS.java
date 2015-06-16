@@ -1,6 +1,6 @@
-package service;
+package main.java.service;
 
-import models.*;
+import main.java.models.*;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
