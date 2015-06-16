@@ -21,16 +21,27 @@
 
   <xs:element name="getOffersResponse" type="tns:getOffersResponse"/>
 
-  <xs:complexType name="daysToHolidays">
+  <xs:complexType name="getBookedDays">
     <xs:sequence>
-      <xs:element name="arg0" type="xs:string" minOccurs="0"/>
+      <xs:element name="arg0" type="xs:int" minOccurs="0"/>
+      <xs:element name="arg1" type="xs:int" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="daysToHolidaysResponse">
+  <xs:complexType name="getBookedDaysResponse">
     <xs:sequence>
-      <xs:element name="return" type="xs:string" minOccurs="0"/>
+      <xs:element name="return" type="xs:dateTime" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="cancelBooking">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:long" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="cancelBookingResponse">
+    <xs:sequence/>
   </xs:complexType>
 
   <xs:complexType name="bookRoom">
@@ -115,26 +126,15 @@
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="cancelBooking">
+  <xs:complexType name="daysToHolidays">
     <xs:sequence>
-      <xs:element name="arg0" type="xs:long" minOccurs="0"/>
+      <xs:element name="arg0" type="xs:string" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="cancelBookingResponse">
-    <xs:sequence/>
-  </xs:complexType>
-
-  <xs:complexType name="getBookedDays">
+  <xs:complexType name="daysToHolidaysResponse">
     <xs:sequence>
-      <xs:element name="arg0" type="xs:int" minOccurs="0"/>
-      <xs:element name="arg1" type="xs:int" minOccurs="0"/>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="getBookedDaysResponse">
-    <xs:sequence>
-      <xs:element name="return" type="xs:dateTime" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="return" type="xs:string" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 </xs:schema>

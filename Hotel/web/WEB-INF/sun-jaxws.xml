@@ -4,6 +4,6 @@
 
     <endpoint
             name='Hotel'
-            implementation='main.java.service.HotelWS'
+            implementation='service.HotelWS'
             url-pattern='/services/Hotel'/>
 </endpoints>
