@@ -1,6 +1,6 @@
-package main.java.service;
+package service;
 
-import main.java.models.*;
+import models.*;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -121,12 +121,7 @@ public class HotelWS {
     @WebMethod
     public void cancelBooking(Long internalBookingId) {
         Session s = getSession();
-        List rooms = s.createQuery("FROM Booking WHERE internalBookingId = :bookingId").setLong("bookingId", internalBookingId).list();
-        if (rooms.size() == 1) {
-            Transaction t = s.beginTransaction();
-            s.delete(rooms.get(0));
-            t.commit();
-        }
+        s.createQuery("DELETE Booking WHERE internalBookingId = :bookingId").setLong("bookingId", internalBookingId).list();
         s.close();
     }
 
