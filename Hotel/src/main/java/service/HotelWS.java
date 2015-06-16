@@ -4,6 +4,7 @@ import models.*;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
@@ -56,10 +57,9 @@ public class HotelWS {
         return o;
     }
 
-    @WebMethod
-    public LinkedList<Date> getBookedDays(Integer roomId, Integer hotelId) {
+    private LinkedList<Date> getBookedDaysList(Integer roomId, Integer hotelId) {
         Session s = getSession();
-        List rooms = s.createQuery("FROM OfferedRoom WHERE hotel.hotelId = :hotelId AND room.roomId = :roomId").setInteger("roomId", roomId).setInteger("hotelId", hotelId).list();
+        List rooms = s.createQuery("FROM OfferedRoom WHERE hotel.internalHotelId = :hotelId AND room.internalRoomId = :roomId").setInteger("roomId", roomId).setInteger("hotelId", hotelId).list();
         if (rooms.size() != 1) {
             s.close();
             return new LinkedList<>();
@@ -88,14 +88,58 @@ public class HotelWS {
         }
     }
 
+    @WebMethod
+    public LinkedList<Date> getBookedDays(Integer roomId, Integer hotelId) {
+        return getBookedDaysList(roomId, hotelId);
+    }
+
+    @WebMethod
+    public Long bookRoom(Integer offerId, Integer roomId, Integer hotelId, Date from, Date to) {
+        synchronized (HotelWS.class) {
+            LinkedList<Date> booked = getBookedDaysList(roomId, hotelId);
+            for (Date day : booked) {
+                if (day.before(to) && day.after(from)) {
+                    return -1L;
+                }
+            }
+            Session s = getSession();
+            List rooms = s.createQuery("FROM OfferedRoom WHERE hotel.internalHotelId = :hotelId AND room.internalRoomId = :roomId AND offer.offerId = :offerId").setInteger("offerId", offerId).setInteger("roomId", roomId).setInteger("hotelId", hotelId).list();
+            if (rooms.size() != 1) {
+                s.close();
+                return -1L;
+            } else {
+                Booking booking = new Booking(null, null, (OfferedRoom) rooms.get(0), from, to, false);
+                Transaction t = s.beginTransaction();
+                s.persist(booking);
+                t.commit();
+                s.close();
+                return booking.getInternalBookingId();
+            }
+        }
+    }
+
+    @WebMethod
+    public void cancelBooking(Long internalBookingId) {
+        Session s = getSession();
+        List rooms = s.createQuery("FROM Booking WHERE internalBookingId = :bookingId").setLong("bookingId", internalBookingId).list();
+        if (rooms.size() == 1) {
+            Transaction t = s.beginTransaction();
+            s.delete(rooms.get(0));
+            t.commit();
+        }
+        s.close();
+    }
+
+    // faktura
+
     public static void main(String[] args) {
-        Offer testOffer1 = new Offer(null, new Date(), new Date(), 25.0, "calkiem ladnie ale zimno", true, 0);
+        Offer testOffer1 = new Offer(null, null, new Date(), new Date(), 25.0, "calkiem ladnie ale zimno", true, 0, null);
 
         Hotel testHotel1 = new Hotel(1, null, "Pod Kasztanem", "Kolobrzegi", "Deszczowo 234", 5);
 
-        Room testRoom1 = new Room(1, testHotel1, 3, true);
-        Room testRoom2 = new Room(2, testHotel1, 2, true);
-        Room testRoom3 = new Room(3, testHotel1, 2, false);
+        Room testRoom1 = new Room(1, testHotel1, 3, true, null, null);
+        Room testRoom2 = new Room(2, testHotel1, 2, true, null, null);
+        Room testRoom3 = new Room(3, testHotel1, 2, false, null, null);
 
         Image testImage1 = new Image(testRoom1);
         Image testImage2 = new Image(testRoom1);
@@ -106,24 +150,25 @@ public class HotelWS {
         OfferedRoom testOfferedRoom2 = new OfferedRoom(testHotel1, testRoom2, testOffer1);
         OfferedRoom testOfferedRoom3 = new OfferedRoom(testHotel1, testRoom3, testOffer1);
 
-        Booking testBooking1 = new Booking(null, testOfferedRoom3, new Date(), new Date(), false);
+        Booking testBooking1 = new Booking(null, null, testOfferedRoom3, new Date(), new Date(), false);
 
-//        Session s = getSession();
-//        Transaction t = s.beginTransaction();
-//        s.persist(testOffer1);
-//        s.persist(testRoom1);
-//        s.persist(testRoom2);
-//        s.persist(testRoom3);
-//        s.persist(testImage1);
-//        s.persist(testImage2);
-//        s.persist(testImage3);
-//        s.persist(testImage4);
-//        s.persist(testOfferedRoom1);
-//        s.persist(testOfferedRoom2);
-//        s.persist(testOfferedRoom3);
-//        s.persist(testBooking1);
-//        s.persist(testHotel1);
-//        t.commit();
+        Session s = getSession();
+        Transaction t = s.beginTransaction();
+        s.persist(testOffer1);
+        s.persist(testRoom1);
+        s.persist(testRoom2);
+        s.persist(testRoom3);
+        s.persist(testImage1);
+        s.persist(testImage2);
+        s.persist(testImage3);
+        s.persist(testImage4);
+        s.persist(testOfferedRoom1);
+        s.persist(testOfferedRoom2);
+        s.persist(testOfferedRoom3);
+        s.persist(testBooking1);
+        s.persist(testHotel1);
+        t.commit();
+        s.close();
 //        LinkedList<Offer> o = new LinkedList<>();
 //        Session s = getSession();
 //        Transaction t = s.beginTransaction();
