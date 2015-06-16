@@ -37,6 +37,7 @@ public class SessionManagement {
     }
 
     public static boolean isOk(Http.Session session) {
-        return getPart(session, 0).equals("ok");
+        String part = getPart(session, 0);
+        return part != null && part.equals("ok");
     }
 }

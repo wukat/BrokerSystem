@@ -13,7 +13,9 @@ libraryDependencies ++= Seq(
   "org.mindrot" % "jbcrypt" % "0.3m",
   "com.typesafe.play" %% "play-mailer" % "2.4.1",
   "org.bitbucket.b_c" % "jose4j" % "0.4.2",
-  "org.apache.commons" % "commons-io" % "1.3.2"
+  "org.apache.commons" % "commons-io" % "1.3.2",
+  "com.lowagie" % "itext" % "4.2.1",
+  "org.xhtmlrenderer" % "flying-saucer-pdf" % "9.0.7"
 )
 
 ebeanEnabled := false
