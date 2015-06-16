@@ -15,6 +15,9 @@ public class Image {
     @Column(name="image_id")
     private Integer imageId;
 
+    @Column(name="internal_image_id")
+    private Integer internalImageId;
+
     @ManyToOne
     @JoinColumn(name="room_id")
     private Room room;
@@ -31,5 +34,11 @@ public class Image {
     public Image(String content, Room room) {
         this.content = content;
         this.room = room;
+    }
+
+    public Image(Integer internalImageId, Room room, String content) {
+        this.internalImageId = internalImageId;
+        this.room = room;
+        this.content = content;
     }
 }

@@ -11,10 +11,13 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "images")
 public class Image {
 
-    @Id
-    @GeneratedValue
     @Column(name = "image_id")
     private Integer imageId;
+
+    @Id
+    @GeneratedValue
+    @Column(name="internal_image_id")
+    private Integer internalImageId;
 
     @XmlTransient
     @ManyToOne
@@ -48,6 +51,14 @@ public class Image {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public Integer getInternalImageId() {
+        return internalImageId;
+    }
+
+    public void setInternalImageId(Integer internalImageId) {
+        this.internalImageId = internalImageId;
     }
 
     public Image() {
