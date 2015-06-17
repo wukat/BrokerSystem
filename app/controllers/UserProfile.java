@@ -37,9 +37,14 @@ public class UserProfile extends Controller {
     @Transactional(readOnly = true)
     public static Result newUserDataForm(Integer id) {
         if (Client.isClient(id)) {
-            return ok(
-                    personalData.render(form(ClientData.class), id)
-            );
+            Client c = Client.getClientById(id);
+            if (c.getRole().getRole().equals("business") && c.getClientData() == null) {
+                return ok(
+                        personalData.render(form(ClientData.class), id)
+                );
+            }
+            flash("error", "Access denied!");
+            return redirect(routes.Application.index());
         }
         return ok(notFound.render("Wrong client id"));
     }
