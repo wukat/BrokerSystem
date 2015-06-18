@@ -1,6 +1,8 @@
 @(form: Form[Authentication.Login])
 @main("Login") {
-
+    @if(flash().containsKey("url")) {
+        @response().setCookie("url", flash.get("url"))
+    }
     @helper.form(routes.Authentication.authenticate()) {
         <h1>Sign in</h1>
         @if(form.hasGlobalErrors) {

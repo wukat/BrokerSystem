@@ -13,6 +13,7 @@ public class Secured extends Security.Authenticator {
     @Override
     public Result onUnauthorized(Context ctx) {
         ctx.flash().put("info", "Please log in first!");
+        ctx.flash().put("url", "GET".equals(ctx.request().method()) ? ctx.request().uri() : "/");
         return redirect(routes.Authentication.login());
     }
 }

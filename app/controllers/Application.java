@@ -8,6 +8,7 @@ import org.xhtmlrenderer.resource.XMLResource;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.Security;
 import views.html.index;
 
 import java.io.ByteArrayInputStream;
@@ -17,7 +18,7 @@ import java.io.IOException;
 public class Application extends Controller {
 
     @Transactional
-//    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(Secured.class)
     public static Result index() throws JoseException, IOException, DocumentException {
 
         Document document = XMLResource.load(new ByteArrayInputStream(index.render("a").body().getBytes())).getDocument();

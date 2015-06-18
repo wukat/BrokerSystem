@@ -7,6 +7,7 @@ import play.data.Form;
 import play.data.validation.Constraints;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
 import views.html.login;
 
@@ -24,15 +25,18 @@ public class Authentication extends Controller {
 
     @Transactional
     public static Result authenticate() throws JoseException {
+        Http.Cookie a = request().cookie("url");
         Form<Login> loginForm = form(Login.class).bindFromRequest();
         if (loginForm.hasErrors()) {
             return badRequest(login.render(loginForm));
         } else {
+            String path = (a != null) ? a.value() : "/";
+            response().discardCookie("url");
             session().clear();
             Global.jwe.setPayload("ok " + loginForm.get().email);
             session("k", Global.jwe.getCompactSerialization());
             return redirect(
-                    routes.Application.index()
+                    path
             );
         }
     }
