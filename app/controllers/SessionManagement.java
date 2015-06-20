@@ -18,7 +18,6 @@ public class SessionManagement {
                 return Global.jwe.getPayload().split(" ");
             }
         } catch (JoseException e) {
-            System.out.println(e);
             Logger.debug("Encryption failed");
             return null;
         }

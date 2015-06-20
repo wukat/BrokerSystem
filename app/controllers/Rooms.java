@@ -1,9 +1,6 @@
 package controllers;
 
-import models.Client;
-import models.Hotel;
-import models.Image;
-import models.Room;
+import models.*;
 import org.apache.commons.io.FileUtils;
 import play.Logger;
 import play.data.Form;
@@ -13,10 +10,7 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
-import views.html.createRoom;
-import views.html.imageUpload;
-import views.html.roomImages;
-import views.html.roomsView;
+import views.html.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -157,4 +151,15 @@ public class Rooms extends Controller {
         flash("error", "Access denied");
         return redirect(routes.Application.index());
     }
+
+    @Transactional
+    public static Result showOfferedRoom(Integer offerId, Integer hotelId, Integer roomId) {
+        OfferedRoom offeredRoom = OfferedRoom.getByAll(offerId, hotelId, roomId);
+        if (offeredRoom != null && !(offeredRoom.getOffer().getPremium() && !SessionManagement.isOk(session()))) {
+            return ok(offeredRoomView.render(offeredRoom));
+        }
+        flash("error", "Access denied");
+        return redirect(routes.Application.index());
+    }
+
 }

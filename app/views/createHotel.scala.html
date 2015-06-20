@@ -1,14 +1,14 @@
 @(form: Form[Hotel])
 @main("New hotel") {
     @helper.form(if(form.value().isEmpty) {routes.Hotels.newHotel()} else {routes.Hotels.editHotel(form.get.getHotelId)}) {
-        <h1>New hotel</h1>
+        <h1>@if(form.value().isEmpty) {New hotel} else {Edit hotel}</h1>
         @if(form.hasGlobalErrors) {
             <div class="alert alert-danger" role="alert">
             @form.globalError.message
             </div>
         }
         <p>
-            <input type="text" name="name" placeholder="Name" required="true" value="@if(!form.value().isEmpty){ @form.get.getName}"/>
+            <input type="text" name="name" placeholder="Name" required="true" value="@if(!form.value().isEmpty){@form.get.getName}"/>
         </p>
         <p>
             @if(!form.value().isEmpty) {

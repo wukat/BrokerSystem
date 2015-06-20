@@ -118,4 +118,21 @@ public class Hotel {
     public static Hotel getById(Integer id) {
         return JPA.em().find(Hotel.class, id);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Hotel hotel = (Hotel) o;
+
+        if (!hotelId.equals(hotel.hotelId)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return hotelId.hashCode();
+    }
 }

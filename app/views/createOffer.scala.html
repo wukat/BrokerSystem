@@ -1,42 +1,101 @@
-@(form: Form[Offer])
-@main("New offer") {
-    @helper.form(routes.Offers.newOffer()) {
-        <h1>New offer</h1>
-        @if(form.hasGlobalErrors) {
-            <div class="alert alert-danger" role="alert">
-            @form.globalError.message
-            </div>
-        }
+@(form: Form[Offer], user: Client)
+@import java.lang.Boolean; var flag=true
+    @main("New offer") {
+        @helper.form(if(form.value().isEmpty) {
+            routes.Offers.newOffer()
+        } else {
+            routes.Offers.editOffer(form.get.getKeyOfferId)
+        }) {
+            <h1>@if(form.value().isEmpty) {New offer} else {Edit offer}</h1>
+            @if(form.hasGlobalErrors) {
+                <div class="alert alert-danger" role="alert">
+                @form.globalError.message
+                </div>
+            }
+            <p>
+                <textarea name="description" placeholder="description" required>@if(!form.value().isEmpty){@form.get.getDescription}</textarea>
+            </p>
+            <p><label>Premium
+                @if(!form.value().isEmpty) {
+                    @if(form.get().getPremium) {
+                        <input type="checkbox" name="premium" checked/>
+                    } else {
+                        <input type="checkbox" name="premium"/>
+                    }
+                } else {
+                    <input type="checkbox" name="premium"/>
+                }
+            </label></p>
+            <input type="hidden" name="offerId" value="@if(!form.value().isEmpty){@form.get.getOfferId}"/>
+            <p><label>Offer available from
+                <input type="date" name="dateFrom" placeholder="Date from" required="true" value='@if(!form.value().isEmpty){@form.get.getDateFrom.format("yyyy-MM-dd")}'></label>
+            </p>
+            <p><label>Offer available to
+                <input type="date" name="dateTo" placeholder="Date to" required="true" value='@if(!form.value().isEmpty){@form.get().getDateTo.format("yyyy-MM-dd")}'></label>
+            </p>
+            <p>
+                <input type="text" name="price" placeholder="Price" value="@if(!form.value().isEmpty){@form.get.getPrice}">
+            </p>
+            <p>
+                <label>Select rooms
+                    @if(form.value().isEmpty) {
+                        <select id="roomsSelect" name="rooms" multiple="multiple" required="required">
+                        @for(hotel <- user.getHotelsPublished) {
+                            @if(hotel.getRooms.size() > 0) {
+                                <optgroup label="@hotel.getName">
+                                @for(room <- hotel.getRooms) {
+                                    @if(room.getHasImages) {
+                                        <option value="@hotel.getHotelId @room.getRoomId">
+                                            Room @room.getRoomNumber with @room.getBedsNumber bed places @if(room.getBathroom) {and bathroom}</option>
+                                    }
+                                }
+                                </optgroup>
+                            }
+                        }
+                        </select>
+                    } else {
+                        <select id="roomsSelect" name="rooms" multiple="multiple" required="required">
+                        @for(hotel <- user.getHotelsPublished) {
+                            @if(hotel.getRooms.size() > 0) {
+                                <optgroup label="@hotel.getName">
+                                @for(room <- hotel.getRooms) {
+                                    @if(room.getHasImages) {
+                                            @{flag = true}
+                                            @for(el <- form.get().getOfferedRooms) {
+                                                @if(el.getRoom.getRoomId.equals(room.getRoomId)) {
+                                                    @{flag = false}
+                                                }
+                                            }
+                                            @if(flag) {
+                                                <option value="@hotel.getHotelId @room.getRoomId">
+                                                    Room @room.getRoomNumber with @room.getBedsNumber bed places @if(room.getBathroom) {and bathroom}</option>
+                                            } else {
+                                                <option value="@hotel.getHotelId @room.getRoomId" selected="selected">
+                                                    Room @room.getRoomNumber with @room.getBedsNumber bed places @if(room.getBathroom) {and bathroom}</option>
+                                            }
+                                        }
+                                    }
+                                </optgroup>
+                            }
+                        }
+                        </select>
+                    }
+                </label>
+            </p>
 
-        <p>
-            <textarea name="description" placeholder="description" required></textarea>
-        </p>
-        <p>
-            <input type="text" name="address" placeholder="Address" required="true">
-        </p>
-        <p><label>Premium
-            <input type="checkbox" name="premium"/>
-        </label></p>
-        <p><label>Expiry date
-            <input type="date" name="expiryDate" placeholder="Expiration date" required="true"></label>
-        </p>
-        <p>
-            <input type="text" name="price" placeholder="Price">
-        </p>
-        <p><label>Standard
-            <select name="standard">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-            </select></label>
-        </p>
-        <p>
-            <input type="number" name="placesNumber" placeholder="Place number" required="true"/>
-        </p>
-        <p>
-            <button class="btn btn-primary" type="submit">Submit</button>
-        </p>
+            <p>
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </p>
+        }
+        <script type="text/javascript">
+        $ ( document ).ready ( function ( ) {
+        $ ( '#roomsSelect' ).multiselect ( {
+        enableFiltering : true,
+        enableClickableOptGroups : true
+        } ) ;
+        $ ( "form" ).first ( ).validate ( {
+        ignore : ':hidden:not("#roomsSelect")'
+        } ) ;
+        } ) ;
+        </script>
     }
-}

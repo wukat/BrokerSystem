@@ -11,8 +11,6 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.index;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class Application extends Controller {
@@ -21,26 +19,26 @@ public class Application extends Controller {
         response().setContentType("text/javascript");
         return ok(
                 Routes.javascriptRouter("jsRoutes",
-                        controllers.routes.javascript.Rooms.removeImage()
+                        controllers.routes.javascript.Rooms.removeImage(),
+                        controllers.routes.javascript.Offers.removeOffer()
                 )
         );
-//        return ok();
     }
 
     @Transactional
     public static Result index() throws JoseException, IOException, DocumentException {
 
-        Document document = XMLResource.load(new ByteArrayInputStream(index.render("a").body().getBytes())).getDocument();
-        ITextRenderer renderer = new ITextRenderer();
-        renderer.setDocument( document, null );
-
-        renderer.layout();
-
-        String fileNameWithPath = "PDF-XhtmlRendered.pdf";
-        FileOutputStream fos = new FileOutputStream(fileNameWithPath);
-        renderer.createPDF( fos );
-        fos.close();
-        System.out.println( "File 1: '" + fileNameWithPath + "' created." );
+//        Document document = XMLResource.load(new ByteArrayInputStream(index.render("a").body().getBytes())).getDocument();
+//        ITextRenderer renderer = new ITextRenderer();
+//        renderer.setDocument( document, null );
+//
+//        renderer.layout();
+//
+//        String fileNameWithPath = "PDF-XhtmlRendered.pdf";
+//        FileOutputStream fos = new FileOutputStream(fileNameWithPath);
+//        renderer.createPDF( fos );
+//        fos.close();
+//        System.out.println( "File 1: '" + fileNameWithPath + "' created." );
 
 //        Client testUser1 = new Client("lolaa@tlen.pl", "password");
 //        Client testUser2 = new Client("hanna@tlen.pl", "password");

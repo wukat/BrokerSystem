@@ -21,6 +21,9 @@ public class Room {
     @Column(name = "internal_room_id")
     private Integer internalRoomId;
 
+    @Column(name = "room_number")
+    private Integer roomNumber;
+
     @ManyToOne
     @JoinColumn(name = "hotel_id")
     private Hotel hotel;
@@ -47,6 +50,14 @@ public class Room {
         this.hotel = hotel;
         this.bedsNumber = bedsNumber;
         this.bathroom = bathroom;
+    }
+
+    public Integer getRoomNumber() {
+        return roomNumber;
+    }
+
+    public void setRoomNumber(Integer roomNumber) {
+        this.roomNumber = roomNumber;
     }
 
     public Boolean getHasImages() {

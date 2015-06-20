@@ -1,0 +1,130 @@
+@(offer: Offer)
+@main("Offer details") {
+    <div class="page-header">
+        <h1>Offer details</h1>@if(offer.getPremium) {It's a premium offer!}
+    </div>
+
+    <div class="row">
+        <div class="panel-body">
+        @offer.getDescription
+        </div>
+    </div>
+
+    <div class="row">
+        <table class="table table-bordered table-responsive table-striped t">
+            <tbody>
+                <tr>
+                    <td>Offer Id</td>
+                    <td>From</td>
+                    <td>To</td>
+                    <td>Price</td>
+                    <td>Visitors</td>
+                    <td>Edit</td>
+                    <td>Remove</td>
+                </tr>
+                <tr>
+                    <td>@offer.getKeyOfferId</td>
+                    <td>@offer.getDateFrom.format("yyyy-MM-dd")</td>
+                    <td>@offer.getDateTo.format("yyyy-MM-dd")</td>
+                    <td>@offer.getPrice</td>
+                    <td>@offer.getVisitCount</td>
+                    <td><a class="list-item" href="@routes.Offers.editOfferForm(offer.getKeyOfferId)"><i class="fa fa-fw fa-edit"></i>
+                        Edit</a></td>
+                    <td><a class="list-item delete-offer" href="#" data-id="@offer.getKeyOfferId"><i class="fa fa-fw fa-trash-o"></i>
+                        Remove</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="row">
+        @if(offer.mapOfContent().isEmpty) {
+            No rooms in offer.
+        } else {
+        <table class="table-striped table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>City</th>
+                    <th>Address</th>
+                    <th>Standard</th>
+                    <th>View rooms</th>
+                </tr>
+            </thead>
+            <tbody>
+            @for(pair <- offer.mapOfContent()) {
+                <tr class="parent" id="@pair._1.getHotelId">
+                    <td>@pair._1.getName</td>
+                    <td>@pair._1.getCity</td>
+                    <td>@pair._1.getAddress</td>
+                    <td><p hidden="hidden">x@pair._1.getStandard</p> @for(i <- 1 to 5) {
+                        @if(i <= pair._1.getStandard) {
+                            <i class="fa fa-fw fa-star"></i>
+                        } else {
+                            <i class="fa fa-fw fa-star-o"></i>
+                        }
+                    }</td>
+                    <td><span class="btn btn-primary"><i class="fa fa-fw fa-level-down"></i>Show rooms</span></td>
+                </tr>
+                <tr class="child-@pair._1.getHotelId" hidden="hidden">
+                    <td colspan="5">
+                        <div class="col-md-6">
+                        @if(pair._2.isEmpty) {
+                            No rooms.
+                        } else {
+                            <table class="table table-striped table-bordered table-hover">
+                                <tbody>
+                                    <tr>
+                                        <td>Room number</td>
+                                        <td>Beds</td>
+                                        <td>Bathroom</td>
+                                    </tr>
+                                    @for(room <- pair._2) {
+                                        <tr data-link="row" class="rowlink">
+                                            <td>@room.getRoomNumber</td>
+                                            <td>@room.getBedsNumber</td>
+                                            <td>@if(room.getBathroom) {
+                                                <i class="fa fa-fw fa-check"></i>
+                                            } else {
+                                                <i class="fa fa-fw fa-times"></i>
+                                            }</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        </div>
+                    </td>
+                </tr>
+            }
+            </tbody>
+            <tfoot>
+                <th colspan="5" class="ts-pager form-horizontal">
+                    <button type="button" class="btn first"><i class="icon-step-backward glyphicon glyphicon-step-backward"></i></button>
+                    <button type="button" class="btn prev"><i class="icon-arrow-left glyphicon glyphicon-backward"></i></button>
+                    <span class="pagedisplay"></span> <!-- this can be any element, including an input -->
+                    <button type="button" class="btn next"><i class="icon-arrow-right glyphicon glyphicon-forward"></i></button>
+                    <button type="button" class="btn last"><i class="icon-step-forward glyphicon glyphicon-step-forward"></i></button>
+                    <select class="pagesize input-mini" title="Select page size">
+                        <option selected="selected" value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="30">30</option>
+                        <option value="40">40</option>
+                    </select>
+                    <select class="pagenum input-mini" title="Select page number"></select>
+                </th>
+            </tfoot>
+
+        </table>
+    }
+    </div>
+    <script>
+    $ ( function ( ) {
+    $ ( 'tr.parent td' )
+    .on ( "click", "span.btn", function ( ) {
+    var idOfParent = $ ( this ).parents ( 'tr' ).attr ( 'id' ) ;
+    $ ( 'tr.child-' + idOfParent ).toggle ( 'slow' ) ;
+    } ) ;
+    $ ( 'tr[class^=child-]' ).hide ( ).children ( 'td' ) ;
+    } ) ;
+    </script>
+}
