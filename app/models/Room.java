@@ -3,8 +3,6 @@ package models;
 import play.db.jpa.JPA;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -33,6 +31,9 @@ public class Room {
     @Column(name = "bathroom")
     private Boolean bathroom;
 
+    @Column(name = "hasImages")
+    private Boolean hasImages;
+
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<OfferedRoom> offeredRooms;
 
@@ -46,6 +47,22 @@ public class Room {
         this.hotel = hotel;
         this.bedsNumber = bedsNumber;
         this.bathroom = bathroom;
+    }
+
+    public Boolean getHasImages() {
+        return hasImages;
+    }
+
+    public void setHasImages(Boolean hasImages) {
+        this.hasImages = hasImages;
+    }
+
+    public List<Image> getImages() {
+        return images;
+    }
+
+    public void setImages(List<Image> images) {
+        this.images = images;
     }
 
     public Integer getRoomId() {
@@ -94,5 +111,9 @@ public class Room {
 
     public void setOfferedRooms(List<OfferedRoom> offeredRooms) {
         this.offeredRooms = offeredRooms;
+    }
+
+    public static Room getById(Integer roomId) {
+        return JPA.em().find(Room.class, roomId);
     }
 }

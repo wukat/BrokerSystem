@@ -5,10 +5,10 @@ import org.jose4j.lang.JoseException;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.xhtmlrenderer.resource.XMLResource;
+import play.Routes;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Result;
-import play.mvc.Security;
 import views.html.index;
 
 import java.io.ByteArrayInputStream;
@@ -17,8 +17,17 @@ import java.io.IOException;
 
 public class Application extends Controller {
 
+    public static Result javascriptRoutes() {
+        response().setContentType("text/javascript");
+        return ok(
+                Routes.javascriptRouter("jsRoutes",
+                        controllers.routes.javascript.Rooms.removeImage()
+                )
+        );
+//        return ok();
+    }
+
     @Transactional
-    @Security.Authenticated(Secured.class)
     public static Result index() throws JoseException, IOException, DocumentException {
 
         Document document = XMLResource.load(new ByteArrayInputStream(index.render("a").body().getBytes())).getDocument();

@@ -1,6 +1,5 @@
 package models;
 
-import controllers.SessionManagement;
 import org.mindrot.jbcrypt.BCrypt;
 import play.Logger;
 import play.db.jpa.JPA;
@@ -40,19 +39,19 @@ public class Client implements Serializable {
     private ClientData clientData;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "clientSender", cascade = CascadeType.ALL)
-    private Set<Message> messagesSent;
+    private List<Message> messagesSent;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "clientRecipient", cascade = CascadeType.ALL)
-    private Set<Message> messagesReceived;
+    private List<Message> messagesReceived;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "clientPublisher", cascade = CascadeType.ALL)
-    private Set<Offer> offersPublished;
+    private List<Offer> offersPublished;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "client", cascade = CascadeType.ALL)
-    private Set<Booking> bookings;
+    private List<Booking> bookings;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "clientPublisher", cascade = CascadeType.ALL)
-    private Set<Hotel> hotelsPublished;
+    private List<Hotel> hotelsPublished;
 
 
 
@@ -112,43 +111,43 @@ public class Client implements Serializable {
         this.clientData = clientData;
     }
 
-    public Set<Message> getMessagesSent() {
+    public List<Message> getMessagesSent() {
         return messagesSent;
     }
 
-    public void setMessagesSent(Set<Message> messagesSent) {
+    public void setMessagesSent(List<Message> messagesSent) {
         this.messagesSent = messagesSent;
     }
 
-    public Set<Message> getMessagesReceived() {
+    public List<Message> getMessagesReceived() {
         return messagesReceived;
     }
 
-    public void setMessagesReceived(Set<Message> messagesReceived) {
+    public void setMessagesReceived(List<Message> messagesReceived) {
         this.messagesReceived = messagesReceived;
     }
 
-    public Set<Offer> getOffersPublished() {
+    public List<Offer> getOffersPublished() {
         return offersPublished;
     }
 
-    public void setOffersPublished(Set<Offer> offersPublished) {
+    public void setOffersPublished(List<Offer> offersPublished) {
         this.offersPublished = offersPublished;
     }
 
-    public Set<Booking> getBookings() {
+    public List<Booking> getBookings() {
         return bookings;
     }
 
-    public void setBookings(Set<Booking> bookings) {
+    public void setBookings(List<Booking> bookings) {
         this.bookings = bookings;
     }
 
-    public Set<Hotel> getHotelsPublished() {
+    public List<Hotel> getHotelsPublished() {
         return hotelsPublished;
     }
 
-    public void setHotelsPublished(Set<Hotel> hotelsPublished) {
+    public void setHotelsPublished(List<Hotel> hotelsPublished) {
         this.hotelsPublished = hotelsPublished;
     }
 
@@ -161,7 +160,7 @@ public class Client implements Serializable {
         this.active = active;
     }
 
-    public Client(String email, String password, String confirmPassword, Boolean active, Role role, ClientData clientData, Set<Message> messagesSent, Set<Message> messagesReceived, Set<Offer> offersPublished, Set<Booking> bookings) {
+    public Client(String email, String password, String confirmPassword, Boolean active, Role role, ClientData clientData, List<Message> messagesSent, List<Message> messagesReceived, List<Offer> offersPublished, List<Booking> bookings) {
         this.email = email;
         this.password = password;
         this.confirmPassword = confirmPassword;

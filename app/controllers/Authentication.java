@@ -17,13 +17,18 @@ import static play.data.Form.form;
  * Created by wukat on 03.06.15.
  */
 public class Authentication extends Controller {
+
     public static Result login() {
+        if(SessionManagement.isOk(session())) {
+            flash("info", "You are logged in");
+            return redirect(routes.Application.index());
+        }
         return ok(
                 login.render(form(Login.class))
         );
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public static Result authenticate() throws JoseException {
         Http.Cookie a = request().cookie("url");
         Form<Login> loginForm = form(Login.class).bindFromRequest();

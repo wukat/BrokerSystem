@@ -1,9 +1,9 @@
-@(offerId: Integer)
+@(hotelId: Integer, roomId: Integer)
 @main("Upload") {
     <h1>Upload pictures</h1>
-    <form name="fileUploadForm" method="POST" enctype="multipart/form-data" action="@routes.Offers.upload(offerId)">
+    <form name="fileUploadForm" method="POST" enctype="multipart/form-data" action="@routes.Rooms.upload(hotelId, roomId)">
         <p>
-            <input type="file" name="pictures" accept="image/*" multiple="multiple">
+            <input type="file" name="pictures" accept="image/*" multiple="multiple" required="true">
         </p>
         <p>
             <button class="btn btn-primary" type="submit">Submit</button>

@@ -12,10 +12,8 @@ import play.libs.mailer.Email;
 import play.libs.mailer.MailerPlugin;
 import play.mvc.Controller;
 import play.mvc.Result;
-import views.html.createAccount;
-import views.html.index;
-import views.html.notFound;
-import views.html.personalData;
+import play.mvc.Security;
+import views.html.*;
 
 import static play.data.Form.form;
 
@@ -113,5 +111,18 @@ public class UserProfile extends Controller {
         email.setBodyText("");
         email.setBodyHtml(htmlBody);
         MailerPlugin.send(email);
+    }
+
+    @Security.Authenticated(Secured.class)
+    @Transactional
+    public static Result profile(Integer id) {
+        if (Client.isClient(id)) {
+            Client client = Client.getClientById(id);
+            if (client.getEmail().equals(SessionManagement.getEmail(session()))) {
+                return ok(profileView.render(client));
+            }
+        }
+        flash("error", "Access denied.");
+        return redirect(routes.Application.index());
     }
 }

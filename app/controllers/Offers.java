@@ -91,9 +91,9 @@ public class Offers extends Controller {
     public static Result uploadForm(Integer offerId) {
         Offer offer = Offer.getOfferById(offerId);
         String email = SessionManagement.getEmail(session());
-        if (offer != null && offer.getClientPublisher().getEmail().equals(email)) {
-            return ok(imageUpload.render(offerId));
-        }
+//        if (offer != null && offer.getClientPublisher().getEmail().equals(email)) {
+//            return ok(imageUpload.render(offerId));
+//        }
         flash("error", "You are not allowed to upload images for this offer");
         return redirect(routes.Application.index());
     }

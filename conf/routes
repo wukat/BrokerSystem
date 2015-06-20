@@ -6,18 +6,33 @@
 GET         /                                      controllers.Application.index()
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file                          controllers.Assets.at(path="/public", file)
 
 GET         /authentication                        controllers.Authentication.login()
 POST        /authentication                        controllers.Authentication.authenticate()
 GET         /logout                                controllers.Authentication.logout()
 # my ideas
 
-GET         /users/new                             controllers.UserProfile.newUserForm()
+GET         /users/form                            controllers.UserProfile.newUserForm()
 POST        /users                                 controllers.UserProfile.newUser()
 GET         /users/$id<[0-9]+>/confirm             controllers.UserProfile.confirm(id: Integer)
 GET         /users/$id<[0-9]+>/personalData        controllers.UserProfile.newUserDataForm(id: Integer)
 POST        /users/$id<[0-9]+>/personalData        controllers.UserProfile.newUserData(id: Integer)
+GET         /users/$id<[0-9]+>                     controllers.UserProfile.profile(id: Integer)
+
+GET         /hotels/new                            controllers.Hotels.newHotelForm()
+POST        /hotels                                controllers.Hotels.newHotel()
+GET         /hotels/$id<[0-9]+>                    controllers.Hotels.editHotelForm(id: Integer)
+POST        /hotels/$id<[0-9]+>                    controllers.Hotels.editHotel(id: Integer)
+#DELETE      /hotels/$id<[0-9]+>                    controllers.Hotels.removeHotel(id: Integer)
+GET         /hotels                                controllers.Hotels.all()
+
+GET         /hotels/$id<[0-9]+>/rooms                                                   controllers.Rooms.allInHotel(id: Integer)
+GET         /hotels/$id<[0-9]+>/rooms/new                                               controllers.Rooms.newRoomForm(id: Integer)
+POST        /hotels/$id<[0-9]+>/rooms                                                   controllers.Rooms.newRoom(id: Integer)
+GET         /hotels/$hotelId<[0-9]+>/rooms/$roomId<[0-9]+>/new                          controllers.Rooms.uploadForm(hotelId: Integer, roomId: Integer)
+POST        /hotels/$hotelId<[0-9]+>/rooms/$roomId<[0-9]+>                              controllers.Rooms.upload(hotelId: Integer, roomId: Integer)
+GET         /hotels/$hotelId<[0-9]+>/rooms/$roomId<[0-9]+>/images                       controllers.Rooms.roomImages(hotelId: Integer, roomId: Integer)
+DELETE      /hotels/$hotelId<[0-9]+>/rooms/$roomId<[0-9]+>/images/$imageId<[0-9]+>       controllers.Rooms.removeImage(hotelId: Integer, roomId: Integer, imageId: Integer)
 
 GET         /offers                                controllers.Offers.all()
 GET         /offers/new                            controllers.Offers.newOfferForm()
@@ -26,7 +41,7 @@ POST        /offers/$id<[0-9]+>/images             controllers.Offers.upload(id:
 POST        /offers                                controllers.Offers.newOffer()
 GET         /offers/$id<[0-9]+>                    controllers.Offers.seeOffer(id: Integer)
 
-#GET         /users/$id<[0-9]+>                      // user profile (with offers and bookings)
+#GET         /users/$id<[0-9]+>                      // user profileView (with offers and bookings)
 # oferty w profilu pojawiają się tylko przez miesiac od wygasniecia
 #GET        /users/$id<[0-9]+>/offers // create offer form
 #GET        /users/$id<[0-9]+>/offers/$id<[0-9]+>    // edit or create
@@ -41,5 +56,6 @@ GET         /offers/$id<[0-9]+>                    controllers.Offers.seeOffer(i
 #DELETE     /users/$id<[0-9]+>/offers/$id<[0-9]+>    // remove
 #POST       /users/$id<[0-9]+>/offers/$id<[0-9]+>    // create -- trzeba przeniesc
 
+GET         /assets/javascripts/routes             controllers.Application.javascriptRoutes()
 
-
+GET         /assets/*file                          controllers.Assets.at(path="/public", file)

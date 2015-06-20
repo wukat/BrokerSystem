@@ -1,5 +1,7 @@
 package models;
 
+import play.db.jpa.JPA;
+
 import javax.persistence.*;
 
 /**
@@ -31,6 +33,38 @@ public class Image {
         this.room = room;
     }
 
+    public Integer getImageId() {
+        return imageId;
+    }
+
+    public void setImageId(Integer imageId) {
+        this.imageId = imageId;
+    }
+
+    public Integer getInternalImageId() {
+        return internalImageId;
+    }
+
+    public void setInternalImageId(Integer internalImageId) {
+        this.internalImageId = internalImageId;
+    }
+
+    public Room getRoom() {
+        return room;
+    }
+
+    public void setRoom(Room room) {
+        this.room = room;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
     public Image(String content, Room room) {
         this.content = content;
         this.room = room;
@@ -40,5 +74,9 @@ public class Image {
         this.internalImageId = internalImageId;
         this.room = room;
         this.content = content;
+    }
+
+    public static Image getById(Integer imageId) {
+        return JPA.em().find(Image.class, imageId);
     }
 }

@@ -1,0 +1,25 @@
+@(form: Form[Room], hotel: Hotel)
+@main("New room") {
+    @helper.form(routes.Rooms.newRoom(hotel.getHotelId)) {
+        <h1>New room</h1>
+        @if(form.hasGlobalErrors) {
+            <div class="alert alert-danger" role="alert">
+            @form.globalError.message
+            </div>
+        }
+        <p><label>Bathroom in room
+            <input type="checkbox" name="bathroom"/>
+        </label>
+        </p>
+        <p><label>Beds number
+            <select name="bedsNumber">
+            @for(i <- 1 to 10) {
+                <option value="@i">@i</option>
+            }
+            </select></label>
+        </p>
+        <p>
+            <button class="btn btn-primary" type="submit">Submit</button>
+        </p>
+    }
+}

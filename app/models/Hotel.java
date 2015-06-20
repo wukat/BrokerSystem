@@ -3,8 +3,6 @@ package models;
 import play.db.jpa.JPA;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -115,5 +113,9 @@ public class Hotel {
 
     public void setRooms(List<Room> rooms) {
         this.rooms = rooms;
+    }
+
+    public static Hotel getById(Integer id) {
+        return JPA.em().find(Hotel.class, id);
     }
 }

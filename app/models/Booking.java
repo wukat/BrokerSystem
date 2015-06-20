@@ -1,7 +1,9 @@
 package models;
 
 import javax.persistence.*;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * Created by magdalena on 01.06.15.
@@ -100,5 +102,11 @@ public class Booking {
 
     public void setCancelled(Boolean cancelled) {
         this.cancelled = cancelled;
+    }
+
+    public boolean canBeCancelled() {
+        GregorianCalendar gc = new GregorianCalendar();
+        gc.add(Calendar.WEEK_OF_YEAR, 2);
+        return dateFrom.after(gc.getTime());
     }
 }
