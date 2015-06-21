@@ -40,6 +40,7 @@ public class Offers extends Controller {
             return ok(notFound.render("Wrong offer id"));
         }
         if (offer.getPremium() && !SessionManagement.isOk(session())) {
+            flash("url", "GET".equals(request().method()) ? request().uri() : "/");
             flash("info", "Log in to access premium offers.");
             return redirect(routes.Authentication.login());
         }

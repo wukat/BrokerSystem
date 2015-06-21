@@ -3,11 +3,11 @@ package models;
 import org.mindrot.jbcrypt.BCrypt;
 import play.Logger;
 import play.db.jpa.JPA;
+import sun.awt.image.ImageWatched;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "clients")
@@ -53,7 +53,16 @@ public class Client implements Serializable {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "clientPublisher", cascade = CascadeType.ALL)
     private List<Hotel> hotelsPublished;
 
+    @Column(name="unread_messages")
+    private Integer unreadMessages;
 
+    public Integer getUnreadMessages() {
+        return unreadMessages;
+    }
+
+    public void setUnreadMessages(Integer unreadMessages) {
+        this.unreadMessages = unreadMessages;
+    }
 
     public Integer getClientId() {
         return clientId;
@@ -267,5 +276,23 @@ public class Client implements Serializable {
     public static boolean isBusinessClient(String email) {
         Role clientRole = Client.getClientRole(email);
         return (clientRole != null && clientRole.getRole().equals("business"));
+    }
+
+    public LinkedList<Message> getConversation(Integer clientId) {
+        Set<Message> conversationSet = new HashSet<>();
+        for (Message m : messagesReceived) {
+            if (m.getClientSender().getClientId().equals(clientId)) {
+                conversationSet.add(m);
+            }
+        }
+        for (Message m : messagesSent) {
+            if (m.getClientRecipient().getClientId().equals(clientId)) {
+                conversationSet.add(m);
+            }
+        }
+        LinkedList<Message> conversation = new LinkedList<>(conversationSet);
+        Collections.sort(conversation);
+        Collections.reverse(conversation);
+        return conversation;
     }
 }

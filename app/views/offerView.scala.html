@@ -1,7 +1,7 @@
 @(offeredRoomList: List[OfferedRoom], offer: Offer, hotel: Hotel)
 @main("Offer") {
     <div class="page-header">
-        <h1>Offer</h1>@if(offer.getPremium) {It's a premium offer!}
+        <h1>Offer @if(offer.getPremium) {<small>It's a premium offer!</small>}</h1>
     </div>
 
     <div class="row">
@@ -93,8 +93,8 @@
 
     <div class="row">
         <div class="col-sm-4">
-            Questions? <button type="button" class="btn btn-default">
-            Mail me</button>
+            Questions? <a href="@routes.Messages.newMessageForm(offer.getKeyOfferId, hotel.getHotelId)" class="btn btn-default" role="button">
+            Mail me</a>
         </div>
     </div>
 

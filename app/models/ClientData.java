@@ -85,5 +85,4 @@ public class ClientData implements Serializable {// extends Model {
         this.telephone = telephone;
         this.address = address;
     }
-
 }

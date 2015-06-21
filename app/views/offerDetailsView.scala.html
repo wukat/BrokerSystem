@@ -1,7 +1,7 @@
 @(offer: Offer)
 @main("Offer details") {
     <div class="page-header">
-        <h1>Offer details</h1>@if(offer.getPremium) {It's a premium offer!}
+        <h1>Offer details @if(offer.getPremium) {<small>It's a premium offer!</small>}</h1>
     </div>
 
     <div class="row">

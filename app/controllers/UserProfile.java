@@ -73,6 +73,7 @@ public class UserProfile extends Controller {
             return badRequest(createAccount.render(userForm));
         } else {
             Client newClient = userForm.get();
+            newClient.setUnreadMessages(0);
             boolean businessUser = (userForm.data().get("bu") != null);
             newClient.setPassword(BCrypt.hashpw(newClient.getPassword(), BCrypt.gensalt()));
             Role role = new Role(newClient, (businessUser) ? "business" : "customer");

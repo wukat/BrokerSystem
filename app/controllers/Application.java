@@ -2,9 +2,6 @@ package controllers;
 
 import com.lowagie.text.DocumentException;
 import org.jose4j.lang.JoseException;
-import org.w3c.dom.Document;
-import org.xhtmlrenderer.pdf.ITextRenderer;
-import org.xhtmlrenderer.resource.XMLResource;
 import play.Routes;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
@@ -132,5 +129,4 @@ public class Application extends Controller {
 
         return ok(index.render("ok"));
     }
-
 }

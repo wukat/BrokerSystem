@@ -1,0 +1,22 @@
+@(offer: Offer, hotelId: Integer, roomId: Integer, form: Form[Message])
+
+@main("New message") {
+    @helper.form(routes.Messages.newMessage(offer.getClientPublisher.getClientId)) {
+        <h1>New message <small>to @offer.getClientPublisher.getEmail</small></h1>
+        @if(form.hasGlobalErrors) {
+            <div class="alert alert-danger" role="alert">
+            @form.globalError.message
+            </div>
+        }
+        <p>
+            <input type="text" hidden="hidden" name="subject" placeholder="subject" required="true" value='@if(roomId==null){@routes.Offers.seeOffer(offer.getKeyOfferId, hotelId).toString()} else {@routes.Rooms.showOfferedRoom(offer.getKeyOfferId, hotelId, roomId).toString()}'/>
+        </p>
+        <p><label>Your message:
+            <textarea name="content" required="required"></textarea>
+        </label>
+        </p>
+        <p>
+            <button class="btn btn-primary" type="submit">Send</button>
+        </p>
+    }
+}

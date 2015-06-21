@@ -1,5 +1,7 @@
 package models;
 
+import play.db.jpa.JPA;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -9,12 +11,12 @@ import java.util.Date;
 
 @Entity
 @Table(name="messages")
-public class Message {
+public class Message implements Comparable<Message> {
 
     @Id
     @GeneratedValue
     @Column(name="messageId")
-    private Long messageId;
+    private Integer messageId;
 
     @ManyToOne
     @JoinColumn(name="sender")
@@ -33,11 +35,22 @@ public class Message {
     @Column(name="content")
     private String content;
 
-    public Long getMessageId() {
+    @Column(name="read")
+    private Boolean read;
+
+    public Boolean getRead() {
+        return read;
+    }
+
+    public void setRead(Boolean read) {
+        this.read = read;
+    }
+
+    public Integer getMessageId() {
         return messageId;
     }
 
-    public void setMessageId(Long messageId) {
+    public void setMessageId(Integer messageId) {
         this.messageId = messageId;
     }
 
@@ -90,4 +103,33 @@ public class Message {
         this.content = content;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Message message = (Message) o;
+
+        if (!messageId.equals(message.messageId)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return messageId.hashCode();
+    }
+
+    @Override
+    public int compareTo(Message message) {
+        if (message == null) {
+            return 1;
+        } else {
+            return this.date.compareTo(message.date);
+        }
+    }
+
+    public static Message getById(Integer messageId) {
+        return JPA.em().find(Message.class, messageId);
+    }
 }

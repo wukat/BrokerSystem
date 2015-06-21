@@ -42,6 +42,13 @@ GET           /offers/$id<[0-9]+>/hotels/$hotelId<[0-9]+>                       
 DELETE        /offers/$id<[0-9]+>                                                           controllers.Offers.removeOffer(id: Integer)
 GET           /offers/$id<[0-9]+>/hotels/$hotelId<[0-9]+>/rooms/$roomId<[0-9]+>             controllers.Rooms.showOfferedRoom(id: Integer, hotelId: Integer, roomId: Integer)
 
+#messages
+GET           /messages/received                                                            controllers.Messages.received()
+GET           /messages/sent                                                                controllers.Messages.sent()
+GET           /messages/$id<[0-9]+>                                                         controllers.Messages.message(id: Integer)
+POST          /messages/$clientId<[0-9]+>                                                   controllers.Messages.newMessage(clientId: Integer)
+GET           /messages/new                                                                 controllers.Messages.newMessageForm(offerId: Integer, hotelId: Integer, roomId: Integer ?= null)
+
 GET           /assets/javascripts/routes                                                    controllers.Application.javascriptRoutes()
 
 GET           /assets/*file                                                                 controllers.Assets.at(path="/public", file)
