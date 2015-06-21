@@ -25,9 +25,9 @@ public class Offers extends Controller {
     public static Result all() {
         LinkedList<OfferedRoom> offers;
         if (SessionManagement.isOk(session())) {
-            offers = OfferedRoom.getAllActual();
+            offers = OfferedRoom.getAllActualDistinct();
         } else {
-            offers = OfferedRoom.getNonPremiumActual();
+            offers = OfferedRoom.getNonPremiumActualDistinct();
         }
         return ok(offersView.render(offers));
     }

@@ -45,11 +45,11 @@ public class Messages extends Controller {
     @Transactional
     public static Result message(Integer messageId) {
         Message message = Message.getById(messageId);
-        if (message == null) {
+        Client client = Client.getClientByEmail(SessionManagement.getEmail(session()));
+        if (message == null || !(message.getClientRecipient().getClientId().equals(client.getClientId()) || message.getClientSender().getClientId().equals(client.getClientId()))) {
             flash("error", "Access denied");
             return redirect(routes.Application.index());
         }
-        Client client = Client.getClientByEmail(SessionManagement.getEmail(session()));
         if (message.getClientRecipient().getClientId().equals(client.getClientId())) {
             if (!message.getRead()) {
                 message.setRead(true);

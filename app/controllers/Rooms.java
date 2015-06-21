@@ -111,7 +111,7 @@ public class Rooms extends Controller {
                 }
             }
             flash("success", "Images uploaded successfully");
-            return redirect(routes.Rooms.newRoomForm(hotelId));
+            return redirect(routes.Rooms.allInHotel(hotelId));
         }
         flash("error", "Access denied");
         return redirect(routes.Application.index());

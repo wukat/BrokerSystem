@@ -19,7 +19,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                @for(message <- client.getMessagesSent) {
+                @for(message <- client.getMessagesSent.reverse) {
                     <tr>
                         <td>@message.getClientRecipient.getEmail</td>
                         <td>@message.getDate.format("yyyy-MM-dd hh:mm")</td>

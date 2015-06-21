@@ -25,7 +25,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                @for(offer <- offers) {
+                @for(offer <- offers.sorted) {
                     <tr data-link="row" class="rowlink">
                         <td><a href=@(routes.Offers.seeOffer(offer.getOffer.getKeyOfferId, offer.getHotel.getHotelId))></a>@offer.getOffer.getClientPublisher.getClientData.getName</td>
                         <td>@offer.getHotel.getName</td>

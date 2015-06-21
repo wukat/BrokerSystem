@@ -71,7 +71,7 @@
         </div>
 
         @if(client.getRole.getRole.equals("business")) {
-            <div class="panel-heading"><h2>Offers</h2></div>
+            <div class="panel-heading"><h2>Offers <small><a href="@routes.Offers.newOfferForm()" role="button" class="btn btn-primary btn-sm">New offer</a></small></h2></div>
             <div class="row">
             @if(client.getOffersPublished.isEmpty) {
                 No offers to show.

@@ -12,7 +12,7 @@ import java.util.List;
 //TODO opis tekstowy
 @Entity
 @Table(name="offered_rooms")
-public class OfferedRoom {
+public class OfferedRoom implements Comparable<OfferedRoom> {
 
     @Id
     @GeneratedValue
@@ -82,17 +82,19 @@ public class OfferedRoom {
         this.bookings = bookings;
     }
 
-    public static LinkedList<OfferedRoom> getAllActual() {
+    public static LinkedList<OfferedRoom> getAllActualDistinct() {
         LinkedList<OfferedRoom> result = new LinkedList<>();
-        for (Object el : JPA.em().createQuery("FROM OfferedRoom WHERE offer.dateTo > current_date").getResultList()) {
+        for (Object el : JPA.em().createNativeQuery("SELECT DISTINCT ON (hotel_id, offer_id) * FROM offered_rooms NATURAL JOIN offers WHERE date_to > CURRENT_DATE", OfferedRoom.class).getResultList()) {
+        //createQuery("SELECT distinct o.offer, o.hotel, o FROM OfferedRoom o WHERE o.offer.dateTo > current_date").getResultList()) {
             result.add((OfferedRoom) el);
         }
         return result;
     }
 
-    public static LinkedList<OfferedRoom> getNonPremiumActual() {
+    public static LinkedList<OfferedRoom> getNonPremiumActualDistinct() {
         LinkedList<OfferedRoom> result = new LinkedList<>();
-        for (Object el : JPA.em().createQuery("FROM OfferedRoom WHERE offer.premium=false AND offer.dateTo > current_date").getResultList()) {
+        for (Object el : JPA.em().createNativeQuery("SELECT DISTINCT ON (hotel_id, offer_id) * FROM offered_rooms NATURAL JOIN offers WHERE premium=false AND date_to > CURRENT_DATE", OfferedRoom.class).getResultList()) {
+        // createQuery("SELECT distinct o.offer, o.hotel, o FROM OfferedRoom o WHERE o.offer.premium=false AND o.offer.dateTo > current_date").getResultList()) {
             result.add((OfferedRoom) el);
         }
         return result;
@@ -112,6 +114,14 @@ public class OfferedRoom {
             return offeredRoomList.get(0);
         }
         return null;
+    }
+
+    @Override
+    public int compareTo(OfferedRoom offeredRoom) {
+        if (offeredRoom == null) {
+            return -1;
+        }
+        return this.getOffer().compareTo(offeredRoom.getOffer());
     }
 }
 

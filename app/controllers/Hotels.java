@@ -41,7 +41,7 @@ public class Hotels extends Controller {
             hotel.setClientPublisher(Client.getClientByEmail(email));
             JPA.em().persist(hotel);
             flash("info", "New hotel added successfully");
-            return redirect(routes.Hotels.newHotelForm());
+            return redirect(routes.Hotels.all());
         }
         flash("error", "You are not allowed to create new offers.");
         return redirect(routes.Application.index());
@@ -78,7 +78,7 @@ public class Hotels extends Controller {
                 hotel.setStandard(hotelNew.getStandard());
                 JPA.em().merge(hotel);
                 flash("info", "Hotel saved successfully");
-                return redirect(routes.Hotels.newHotelForm());
+                return redirect(routes.Hotels.all());
             }
         }
         flash("error", "Access denied.");

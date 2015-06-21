@@ -11,7 +11,7 @@ import java.util.*;
 //TODO opis tekstowy
 @Entity
 @Table(name = "offers")
-public class Offer {
+public class Offer implements Comparable<Offer> {
 
     @Id
     @GeneratedValue
@@ -190,5 +190,18 @@ public class Offer {
             }
         }
         return map;
+    }
+
+    @Override
+    public int compareTo(Offer offer) {
+        if (offer == null) {
+            return -1;
+        }
+        if (offer.getPremium() && !this.getPremium()) {
+            return 1;
+        } else if (!offer.getPremium() && this.getPremium()) {
+            return -1;
+        }
+        return 0;
     }
 }
