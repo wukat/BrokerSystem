@@ -127,4 +127,26 @@ public class Room {
     public static Room getById(Integer roomId) {
         return JPA.em().find(Room.class, roomId);
     }
+
+    public static Room getByInternalIdAndClient(Integer internalRoomId, Integer clientId) {
+        List rooms = JPA.em().createNativeQuery("SELECT * FROM rooms NATURAL JOIN hotels WHERE internal_room_id =:roomId AND hotels.client_id =:clientId", Room.class).setParameter("clientId", clientId).setParameter("roomId", internalRoomId).getResultList();
+        if (rooms.size() != 1) {
+            return null;
+        }
+        return (Room) rooms.get(0);
+    }
+    @Override
+    public String toString() {
+        return "Room{" +
+                "roomId=" + roomId +
+                ", internalRoomId=" + internalRoomId +
+                ", roomNumber=" + roomNumber +
+                ", hotel=" + hotel +
+                ", bedsNumber=" + bedsNumber +
+                ", bathroom=" + bathroom +
+                ", hasImages=" + hasImages +
+                ", offeredRooms=" + offeredRooms +
+                ", images=" + images +
+                '}';
+    }
 }

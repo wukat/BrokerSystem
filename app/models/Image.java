@@ -3,6 +3,7 @@ package models;
 import play.db.jpa.JPA;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Created by magdalena on 01.06.15.
@@ -78,5 +79,23 @@ public class Image {
 
     public static Image getById(Integer imageId) {
         return JPA.em().find(Image.class, imageId);
+    }
+
+    public static Image getByInternalIdAndClient(Integer internalImageId, Integer clientId) {
+        List images = JPA.em().createNativeQuery("SELECT * FROM images NATURAL JOIN hotels WHERE internal_image_id =:imageId AND hotels.client_id =:clientId", Image.class).setParameter("clientId", clientId).setParameter("imageId", internalImageId).getResultList();
+        if (images.size() != 1) {
+            return null;
+        }
+        return (Image) images.get(0);
+    }
+
+    @Override
+    public String toString() {
+        return "Image{" +
+                "imageId=" + imageId +
+                ", internalImageId=" + internalImageId +
+                ", room=" + room +
+                ", content='" + content + '\'' +
+                '}';
     }
 }

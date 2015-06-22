@@ -18,6 +18,7 @@ import static play.data.Form.form;
  */
 public class Authentication extends Controller {
 
+    @HTTPSmust
     public static Result login() {
         if(SessionManagement.isOk(session())) {
             flash("info", "You are logged in");
@@ -28,6 +29,7 @@ public class Authentication extends Controller {
         );
     }
 
+    @HTTPSmust
     @Transactional(readOnly = true)
     public static Result authenticate() throws JoseException {
         Http.Cookie a = request().cookie("url");

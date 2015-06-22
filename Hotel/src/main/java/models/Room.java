@@ -31,6 +31,12 @@ public class Room {
     @Column(name = "bathroom")
     private Boolean bathroom;
 
+    @Column(name = "hasImages")
+    private Boolean hasImages;
+
+    @Column(name = "room_number")
+    private Integer roomNumber;
+
     @XmlTransient
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<OfferedRoom> offeredRooms;
@@ -51,6 +57,22 @@ public class Room {
         this.bathroom = bathroom;
         this.offeredRooms = offeredRooms;
         this.images = images;
+    }
+
+    public Integer getRoomNumber() {
+        return roomNumber;
+    }
+
+    public void setRoomNumber(Integer roomNumber) {
+        this.roomNumber = roomNumber;
+    }
+
+    public Boolean getHasImages() {
+        return hasImages;
+    }
+
+    public void setHasImages(Boolean hasImages) {
+        this.hasImages = hasImages;
     }
 
     public List<Image> getImages() {

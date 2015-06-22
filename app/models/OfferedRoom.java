@@ -19,15 +19,15 @@ public class OfferedRoom implements Comparable<OfferedRoom> {
     @Column(name = "offered_room_id")
     private Integer offeredRoomId;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "hotel_id")
     private Hotel hotel;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "room_id")
     private Room room;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "offer_id")
     private Offer offer;
 
@@ -85,7 +85,6 @@ public class OfferedRoom implements Comparable<OfferedRoom> {
     public static LinkedList<OfferedRoom> getAllActualDistinct() {
         LinkedList<OfferedRoom> result = new LinkedList<>();
         for (Object el : JPA.em().createNativeQuery("SELECT DISTINCT ON (hotel_id, offer_id) * FROM offered_rooms NATURAL JOIN offers WHERE date_to > CURRENT_DATE", OfferedRoom.class).getResultList()) {
-        //createQuery("SELECT distinct o.offer, o.hotel, o FROM OfferedRoom o WHERE o.offer.dateTo > current_date").getResultList()) {
             result.add((OfferedRoom) el);
         }
         return result;
@@ -94,7 +93,6 @@ public class OfferedRoom implements Comparable<OfferedRoom> {
     public static LinkedList<OfferedRoom> getNonPremiumActualDistinct() {
         LinkedList<OfferedRoom> result = new LinkedList<>();
         for (Object el : JPA.em().createNativeQuery("SELECT DISTINCT ON (hotel_id, offer_id) * FROM offered_rooms NATURAL JOIN offers WHERE premium=false AND date_to > CURRENT_DATE", OfferedRoom.class).getResultList()) {
-        // createQuery("SELECT distinct o.offer, o.hotel, o FROM OfferedRoom o WHERE o.offer.premium=false AND o.offer.dateTo > current_date").getResultList()) {
             result.add((OfferedRoom) el);
         }
         return result;
@@ -104,11 +102,11 @@ public class OfferedRoom implements Comparable<OfferedRoom> {
         return JPA.em().find(OfferedRoom.class, offerId);
     }
 
-    public static List<OfferedRoom> getByHotelAndOffer(Integer offerId, Integer hotelId) {
+    public static List<OfferedRoom> getByHotelAndOfferWithImages(Integer offerId, Integer hotelId) {
         return JPA.em().createQuery("FROM OfferedRoom WHERE offer.keyOfferId =:offerId AND hotel.hotelId =:hotelId AND room.hasImages = true", OfferedRoom.class).setParameter("offerId", offerId).setParameter("hotelId", hotelId).getResultList();
     }
 
-    public static OfferedRoom getByAll(Integer offerId, Integer hotelId, Integer roomId) {
+    public static OfferedRoom getByAllWithImages(Integer offerId, Integer hotelId, Integer roomId) {
         List<OfferedRoom> offeredRoomList = JPA.em().createQuery("FROM OfferedRoom WHERE offer.keyOfferId =:offerId AND hotel.hotelId =:hotelId AND room.roomId =:roomId AND room.hasImages = true", OfferedRoom.class).setParameter("offerId", offerId).setParameter("hotelId", hotelId).setParameter("roomId", roomId).getResultList();
         if (offeredRoomList.size() == 1) {
             return offeredRoomList.get(0);
@@ -122,6 +120,17 @@ public class OfferedRoom implements Comparable<OfferedRoom> {
             return -1;
         }
         return this.getOffer().compareTo(offeredRoom.getOffer());
+    }
+
+    @Override
+    public String toString() {
+        return "OfferedRoom{" +
+                "offeredRoomId=" + offeredRoomId +
+                ", hotel=" + hotel +
+                ", room=" + room +
+                ", offer=" + offer +
+                ", bookings=" + bookings +
+                '}';
     }
 }
 

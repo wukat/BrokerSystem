@@ -55,7 +55,7 @@ public class Hotel {
         return hotelId;
     }
 
-    public void setHotelId(Integer keyHotelId) {
+    public void setHotelId(Integer hotelId) {
         this.hotelId = hotelId;
     }
 
@@ -63,7 +63,7 @@ public class Hotel {
         return internalHotelId;
     }
 
-    public void setInternalHotelId(Integer hotelId) {
+    public void setInternalHotelId(Integer internalHotelId) {
         this.internalHotelId = internalHotelId;
     }
 
@@ -119,6 +119,14 @@ public class Hotel {
         return JPA.em().find(Hotel.class, id);
     }
 
+    public static Hotel getByInternalIdAndClient(Integer internalHotelId, Integer clientId) {
+        List hotels = JPA.em().createNativeQuery("SELECT * FROM hotels WHERE internal_hotel_id =:hotelId AND client_id =:clientId", Hotel.class).setParameter("clientId", clientId).setParameter("hotelId", internalHotelId).getResultList();
+        if (hotels.size() != 1) {
+            return null;
+        }
+        return (Hotel) hotels.get(0);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -134,5 +142,19 @@ public class Hotel {
     @Override
     public int hashCode() {
         return hotelId.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Hotel{" +
+                "hotelId=" + hotelId +
+                ", internalHotelId=" + internalHotelId +
+                ", clientPublisher=" + clientPublisher +
+                ", name='" + name + '\'' +
+                ", city='" + city + '\'' +
+                ", address='" + address + '\'' +
+                ", standard=" + standard +
+                ", rooms=" + rooms +
+                '}';
     }
 }

@@ -44,7 +44,7 @@ public class Offers extends Controller {
             flash("info", "Log in to access premium offers.");
             return redirect(routes.Authentication.login());
         }
-        List<OfferedRoom> offeredRoomList = OfferedRoom.getByHotelAndOffer(offerId, hotelId);
+        List<OfferedRoom> offeredRoomList = OfferedRoom.getByHotelAndOfferWithImages(offerId, hotelId);
         offer.setVisitCount(offer.getVisitCount() + 1);
         JPA.em().flush();
         if (offer.getDateTo().before(new Date())) {

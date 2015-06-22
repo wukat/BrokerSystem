@@ -154,7 +154,7 @@ public class Rooms extends Controller {
 
     @Transactional
     public static Result showOfferedRoom(Integer offerId, Integer hotelId, Integer roomId) {
-        OfferedRoom offeredRoom = OfferedRoom.getByAll(offerId, hotelId, roomId);
+        OfferedRoom offeredRoom = OfferedRoom.getByAllWithImages(offerId, hotelId, roomId);
         if (offeredRoom != null && !(offeredRoom.getOffer().getPremium() && !SessionManagement.isOk(session()))) {
             return ok(offeredRoomView.render(offeredRoom));
         }

@@ -22,6 +22,7 @@ import static play.data.Form.form;
  */
 public class UserProfile extends Controller {
 
+    @HTTPSmust
     public static Result newUserForm() {
         if (SessionManagement.isOk(session())) {
             flash("error", "You already have an account");
@@ -62,10 +63,11 @@ public class UserProfile extends Controller {
             JPA.em().persist(clientData);
             sendActivationMail(client.getEmail());
             flash("success", "Registration proceeded successfully! Check your email for confirmation mail.");
-            return ok();
+            return redirect(routes.Application.index());
         }
     }
 
+    @HTTPSmust
     @Transactional
     public static Result newUser() {
         Form<Client> userForm = form(Client.class).bindFromRequest();
@@ -86,16 +88,21 @@ public class UserProfile extends Controller {
             } else {
                 sendActivationMail(newClient.getEmail());
                 flash("success", "Registration proceeded successfully! Check your email for confirmation mail.");
-                return ok();
+                return redirect(routes.Application.index());
             }
         }
     }
 
     @Transactional
-    public static Result confirm(Integer id) { //TODO do not allow to confirm business account if there is not user data
-        Client.activateClient(id);
-        flash("success", "Account activated, you can log in now!");
-        return ok(index.render("Account activated"));
+    public static Result confirm(Integer id) {
+        Client client = Client.getClientById(id);
+        if (client == null) {
+            flash("error", "Access denied!");
+        } else {
+            Client.activateClient(id);
+            flash("success", "Account activated, you can log in now!");
+        }
+        return ok(index.render(""));
     }
 
     private static void sendActivationMail(String to) {

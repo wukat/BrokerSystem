@@ -1,8 +1,17 @@
 package models;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
 import play.db.jpa.JPA;
 
 import javax.persistence.*;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.StringReader;
 import java.util.*;
 
 /**
@@ -10,6 +19,7 @@ import java.util.*;
  */
 //TODO opis tekstowy
 @Entity
+@XmlRootElement
 @Table(name = "offers")
 public class Offer implements Comparable<Offer> {
 
@@ -159,8 +169,16 @@ public class Offer implements Comparable<Offer> {
         return JPA.em().find(Offer.class, offerId);
     }
 
+    public static Offer getByInternalIdAndClient(Integer internalOfferId, Integer clientId) {
+        List offers = JPA.em().createNativeQuery("SELECT * FROM offers WHERE internal_offer_id =:offerId AND client_id =:clientId", Offer.class).setParameter("clientId", clientId).setParameter("offerId", internalOfferId).getResultList();
+        if (offers.size() != 1) {
+            return null;
+        }
+        return (Offer) offers.get(0);
+    }
+
     public static Offer getNotExpiredById(Integer offerId) {
-        List offers = JPA.em().createNativeQuery("SELECT * FROM offers WHERE date_to > current_date - interval '1 month' AND offer_id =:offerId", Offer.class).setParameter("offerId", offerId).getResultList();
+        List offers = JPA.em().createNativeQuery("SELECT * FROM offers WHERE date_to > current_date - INTERVAL '1 month' AND offer_id =:offerId", Offer.class).setParameter("offerId", offerId).getResultList();
         if (offers.size() != 1) {
             return null;
         }
@@ -178,8 +196,8 @@ public class Offer implements Comparable<Offer> {
         return null;
     }
 
-    public Map<Hotel, LinkedList<Room> > mapOfContent() {
-        Map<Hotel, LinkedList<Room> > map = new HashMap<>();
+    public Map<Hotel, LinkedList<Room>> mapOfContent() {
+        Map<Hotel, LinkedList<Room>> map = new HashMap<>();
         for (OfferedRoom offeredRoom : offeredRooms) {
             if (map.containsKey(offeredRoom.getHotel())) {
                 map.get(offeredRoom.getHotel()).add(offeredRoom.getRoom());
@@ -203,5 +221,92 @@ public class Offer implements Comparable<Offer> {
             return -1;
         }
         return 0;
+    }
+
+    @Override
+    public String toString() {
+        return "Offer{" +
+                "keyOfferId=" + keyOfferId +
+                ", offerId=" + offerId +
+                ", clientPublisher=" + clientPublisher +
+                ", dateFrom=" + dateFrom +
+                ", dateTo=" + dateTo +
+                ", price=" + price +
+                ", description='" + description + '\'' +
+                ", premium=" + premium +
+                ", visitCount=" + visitCount +
+                ", offeredRooms=" + offeredRooms +
+                '}';
+    }
+
+    public static LinkedList<Offer> getOffersFromXml(String xml) {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        LinkedList<Offer> offers = new LinkedList<>();
+        try {
+            JAXBContext context = JAXBContext.newInstance(Offer.class);
+            Unmarshaller u = context.createUnmarshaller();
+            builder = factory.newDocumentBuilder();
+            Document document = builder.parse(new InputSource(new StringReader(xml)));
+
+            Node a = document.getDocumentElement().getElementsByTagName("return").item(0);
+            for (int i = 0; i < a.getParentNode().getChildNodes().getLength(); i++) {
+                Node current = a.getParentNode().getChildNodes().item(i);
+                document.renameNode(current, null, "offer");
+                offers.add((Offer) u.unmarshal(current));
+            }
+        } catch (Exception e) {
+            return new LinkedList<>();
+        }
+        return offers;
+    }
+
+    public static boolean updateOrSave(LinkedList<Offer> offers, Client client) {
+        boolean flag = false;
+        for (Offer o : offers) {
+            o.setClientPublisher(client);
+            o.setKeyOfferId(null);
+            Offer old = Offer.getByInternalIdAndClient(o.getOfferId(), client.getClientId());
+            if (old == null) {
+                flag = true;
+                for (OfferedRoom offeredRoom : o.getOfferedRooms()) {
+                    offeredRoom.setOfferedRoomId(null);
+                    Hotel oldHotel = Hotel.getByInternalIdAndClient(offeredRoom.getHotel().getInternalHotelId(), client.getClientId());
+                    Room oldRoom = Room.getByInternalIdAndClient(offeredRoom.getRoom().getInternalRoomId(), client.getClientId());
+                    if (oldHotel != null) {
+                        if (oldRoom != null) {
+                            offeredRoom.setRoom(oldRoom);
+                        } else {
+                            offeredRoom.getRoom().setHotel(oldHotel);
+                            offeredRoom.getRoom().setRoomId(null);
+                            for (Image i : offeredRoom.getRoom().getImages()) {
+                                i.setImageId(null);
+                                i.setRoom(offeredRoom.getRoom());
+                            }
+                            offeredRoom.getRoom().setHasImages(!offeredRoom.getRoom().getImages().isEmpty());
+                            JPA.em().persist(offeredRoom.getRoom());
+                        }
+                        offeredRoom.setHotel(oldHotel);
+                    }
+                    if (oldHotel == null) {
+                        offeredRoom.getRoom().setHotel(offeredRoom.getHotel());
+                        offeredRoom.getRoom().setRoomId(null);
+                        for (Image i : offeredRoom.getRoom().getImages()) {
+                            i.setImageId(null);
+                            i.setRoom(offeredRoom.getRoom());
+                        }
+                        offeredRoom.getRoom().setHasImages(!offeredRoom.getRoom().getImages().isEmpty());
+                        offeredRoom.getHotel().setRooms(null);
+                        offeredRoom.getHotel().setClientPublisher(client);
+                        offeredRoom.getHotel().setHotelId(null);
+                        JPA.em().persist(offeredRoom.getHotel());
+                        JPA.em().persist(offeredRoom.getRoom());
+                    }
+                    offeredRoom.setOffer(o);
+                }
+                JPA.em().persist(o);
+            }
+        }
+        return flag;
     }
 }

@@ -10,7 +10,7 @@
                 <p>@client.getClientData.getTelephone</p>
                 @if(client.getClientData.getEndpoint != null) {
                     <p>
-                        <a class="btn btn-default" href="#" role="button">Synchronize</a>
+                        <a class="btn btn-default" href="@routes.WebServiceCaller.synchronize()" role="button"><i class="fa fa-cloud-download"></i> Fetch data</a>
                     </p>
                 }
             </div>
@@ -45,7 +45,7 @@
                         <td>@booking.getOfferedRoom.getHotel.getName</td>
                         <td>View details</td>
                         <td>@if(booking.canBeCancelled) {
-                            <a class="list-item" href="#"><i class="fa fa-fw fa-trash"></i>Cancel</a>
+                            <a class="list-item" href="#"><i class="fa fa-fw fa-trash-o"></i>Cancel</a>
                         }</td>
                     </tr>
                 }
@@ -86,7 +86,7 @@
                             <th>Visitors</th>
                             <th class="filter-false">Details</th>
                             <th class="filter-false">Edit</th>
-                            <th class="filter-false">Remove</th>
+                            <th class="filter-false">Deactivate</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -99,7 +99,7 @@
                             <td>@offer.getVisitCount</td>
                             <td><a class="list-item" href="@routes.Offers.seeOfferDetails(offer.getKeyOfferId)"><i class="fa fa-fw fa-eye"></i>View</a></td>
                             <td><a class="list-item" href="@routes.Offers.editOfferForm(offer.getKeyOfferId)"><i class="fa fa-fw fa-edit"></i>Edit</a></td>
-                            <td><a class="list-item delete-offer" href="#" data-id="@offer.getKeyOfferId" ><i class="fa fa-fw fa-trash"></i>Remove</a></td>
+                            <td><a class="list-item delete-offer" href="#" data-id="@offer.getKeyOfferId" ><i class="fa fa-fw fa-trash-o"></i>Deactivate</a></td>
                         </tr>
                     }
                     </tbody>

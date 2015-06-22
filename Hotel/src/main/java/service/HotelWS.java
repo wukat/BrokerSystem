@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * Created by wukat on 15.06.15.
  */
-@WebService(name = "Hotel", targetNamespace = "http://localhost:8080/Hotel_war_exploded/Hotel")
+@WebService(name = "HotelService", targetNamespace = "http://localhost:8080/Hotel_war_exploded/Hotel")
 public class HotelWS {
 
     private static final Long dayInMiliSecs = 86400000L;
@@ -129,6 +129,7 @@ public class HotelWS {
 
     public static void main(String[] args) {
         Offer testOffer1 = new Offer(null, null, new Date(), new Date(), 25.0, "calkiem ladnie ale zimno", true, 0, null);
+        Offer testOffer2 = new Offer(null, null, new Date(), new Date(), 25.0, "calkiem ladnie ale zimno", true, 0, null);
 
         Hotel testHotel1 = new Hotel(1, null, "Pod Kasztanem", "Kolobrzegi", "Deszczowo 234", 5);
 
@@ -142,7 +143,7 @@ public class HotelWS {
         Image testImage4 = new Image(testRoom3);
 
         OfferedRoom testOfferedRoom1 = new OfferedRoom(testHotel1, testRoom1, testOffer1);
-        OfferedRoom testOfferedRoom2 = new OfferedRoom(testHotel1, testRoom2, testOffer1);
+        OfferedRoom testOfferedRoom2 = new OfferedRoom(testHotel1, testRoom2, testOffer2);
         OfferedRoom testOfferedRoom3 = new OfferedRoom(testHotel1, testRoom3, testOffer1);
 
         InnerBooking testInnerBooking1 = new InnerBooking(null, new Date(), new Date(), testOfferedRoom3.getHotel(), testOfferedRoom3.getRoom());
@@ -150,6 +151,7 @@ public class HotelWS {
         Session s = getSession();
         Transaction t = s.beginTransaction();
         s.persist(testOffer1);
+        s.persist(testOffer2);
         s.persist(testRoom1);
         s.persist(testRoom2);
         s.persist(testRoom3);

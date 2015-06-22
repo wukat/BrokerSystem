@@ -32,7 +32,7 @@ public class Messages extends Controller {
             }
 
         } else {
-            OfferedRoom offeredRoom = OfferedRoom.getByAll(offerId, hotelId, roomId);
+            OfferedRoom offeredRoom = OfferedRoom.getByAllWithImages(offerId, hotelId, roomId);
             if (offeredRoom != null) {
                 return ok(createMessage.render(offeredRoom.getOffer(), hotelId, roomId, form(Message.class)));
             }
