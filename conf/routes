@@ -39,6 +39,7 @@ GET           /offers/$id<[0-9]+>/edit                                          
 POST          /offers/$id<[0-9]+>                                                           controllers.Offers.editOffer(id: Integer)
 GET           /offers/$id<[0-9]+>                                                           controllers.Offers.seeOfferDetails(id: Integer)
 GET           /offers/$id<[0-9]+>/hotels/$hotelId<[0-9]+>                                   controllers.Offers.seeOffer(id: Integer, hotelId: Integer)
+GET           /offers/$id<[0-9]+>/hotels/$hotelId<[0-9]+>/export                            controllers.Offers.offerToPdf(id: Integer, hotelId: Integer)
 DELETE        /offers/$id<[0-9]+>                                                           controllers.Offers.removeOffer(id: Integer)
 GET           /offers/$id<[0-9]+>/hotels/$hotelId<[0-9]+>/rooms/$roomId<[0-9]+>             controllers.Rooms.showOfferedRoom(id: Integer, hotelId: Integer, roomId: Integer)
 

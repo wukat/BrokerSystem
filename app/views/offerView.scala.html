@@ -1,101 +1,104 @@
 @(offeredRoomList: List[OfferedRoom], offer: Offer, hotel: Hotel)
-@main("Offer") {
-    <div class="page-header">
-        <h1>Offer @if(offer.getPremium) {<small>It's a premium offer!</small>}</h1>
-    </div>
-
-    <div class="row">
-        <div class="panel-body">
-        @offer.getDescription
-            <p></p>
-            <p>Interested? Choose room to book!</p>
+    @main("Offer") {
+        <div class="page-header">
+            <h1>Offer @if(offer.getPremium) {
+                <small>It's a premium offer!</small>
+            }</h1>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <div class="panel-heading">
-                <h3>Rooms</h3>
+
+        <div class="row">
+            <div class="panel-body">
+                @offer.getDescription
+                <p></p>
+                <p>Interested? Choose room to book!</p>
             </div>
-            @if(offeredRoomList.isEmpty) {
-                Nothing to show.
-            } else {
-            <table class="table table-striped table-bordered table-hover">
-                <thead>
-                    <tr>
-                        <th>Room number</th>
-                        <th>Beds</th>
-                        <th class="filter-false">Bathroom</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @for(room <- offeredRoomList) {
-                    <tr data-link="row" class="rowlink">
-                        <td><a href=@(routes.Rooms.showOfferedRoom(offer.getKeyOfferId, hotel.getHotelId, room.getRoom.getRoomId))></a>@room.getRoom.getRoomNumber</td>
-                        <td>@room.getRoom.getBedsNumber</td>
-                        <td>@if(room.getRoom.getBathroom) {
-                            <i class="fa fa-fw fa-check"></i>
-                        } else {
-                            <i class="fa fa-fw fa-times"></i>
-                        }</td>
-                    </tr>
-                }
-                </tbody>
-                <tfoot>
-                    <th colspan="3" class="ts-pager form-horizontal">
-                        <button type="button" class="btn first"><i class="icon-step-backward glyphicon glyphicon-step-backward"></i></button>
-                        <button type="button" class="btn prev"><i class="icon-arrow-left glyphicon glyphicon-backward"></i></button>
-                        <span class="pagedisplay"></span> <!-- this can be any element, including an input -->
-                        <button type="button" class="btn next"><i class="icon-arrow-right glyphicon glyphicon-forward"></i></button>
-                        <button type="button" class="btn last"><i class="icon-step-forward glyphicon glyphicon-step-forward"></i></button>
-                        <select class="pagesize input-mini" title="Select page size">
-                            <option selected="selected" value="10">10</option>
-                            <option value="20">20</option>
-                            <option value="30">30</option>
-                            <option value="40">40</option>
-                        </select>
-                        <select class="pagenum input-mini" title="Select page number"></select>
-                    </th>
-                </tfoot>
-            </table>
         </div>
-        }
-        <div class="col-md-6">
-            <div class="panel-heading">
-                <h3>Offer details</h3>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="panel-heading">
+                    <h3>Rooms</h3>
+                </div>
+                @if(offeredRoomList.isEmpty) {
+                    Nothing to show.
+                } else {
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>Room number</th>
+                                <th>Beds</th>
+                                <th class="filter-false">Bathroom</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @for(room <- offeredRoomList) {
+                            <tr data-link="row" class="rowlink">
+                                <td><a href="@(routes.Rooms.showOfferedRoom(offer.getKeyOfferId, hotel.getHotelId, room.getRoom.getRoomId))"></a> @room.getRoom.getRoomNumber</td>
+                                <td>@room.getRoom.getBedsNumber</td>
+                                <td>@if(room.getRoom.getBathroom) {
+                                    <i class="fa fa-fw fa-check"></i>
+                                } else {
+                                    <i class="fa fa-fw fa-times"></i>
+                                }</td>
+                            </tr>
+                        }
+                        </tbody>
+                        <tfoot>
+                            <th colspan="3" class="ts-pager form-horizontal">
+                                <button type="button" class="btn first"><i class="icon-step-backward glyphicon glyphicon-step-backward"></i></button>
+                                <button type="button" class="btn prev"><i class="icon-arrow-left glyphicon glyphicon-backward"></i></button>
+                                <span class="pagedisplay"></span> <!-- this can be any element, including an input -->
+                                <button type="button" class="btn next"><i class="icon-arrow-right glyphicon glyphicon-forward"></i></button>
+                                <button type="button" class="btn last"><i class="icon-step-forward glyphicon glyphicon-step-forward"></i></button>
+                                <select class="pagesize input-mini" title="Select page size">
+                                    <option selected="selected" value="10">10</option>
+                                    <option value="20">20</option>
+                                    <option value="30">30</option>
+                                    <option value="40">40</option>
+                                </select>
+                                <select class="pagenum input-mini" title="Select page number"></select>
+                            </th>
+                        </tfoot>
+                    </table>
+                </div>
+            }
+            <div class="col-md-6">
+                <div class="panel-heading">
+                    <h3>Offer details</h3>
+                </div>
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <td>Hotel:</td>
+                            <td>@hotel.getName</td>
+                        </tr>
+                        <tr>
+                            <td>City:</td>
+                            <td>@hotel.getCity</td>
+                        </tr>
+                        <tr>
+                            <td>Address:</td>
+                            <td>@hotel.getAddress</td>
+                        </tr>
+
+                        <tr>
+                            <td>Price:</td>
+                            <td>@offer.getPrice</td>
+                        </tr>
+                        <tr>
+                            <td>Publisher:</td>
+                            <td>@offer.getClientPublisher.getClientData.getName</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <table class="table">
-                <tbody>
-                    <tr>
-                        <td>Hotel:</td>
-                        <td>@hotel.getName</td>
-                    </tr>
-                    <tr>
-                        <td>City:</td>
-                        <td>@hotel.getCity</td>
-                    </tr>
-                    <tr>
-                        <td>Address:</td>
-                        <td>@hotel.getAddress</td>
-                    </tr>
-
-                    <tr>
-                        <td>Price:</td>
-                        <td>@offer.getPrice</td>
-                    </tr>
-                    <tr>
-                        <td>Publisher:</td>
-                        <td>@offer.getClientPublisher.getClientData.getName</td>
-                    </tr>
-                </tbody>
-            </table>
         </div>
-    </div>
 
-    <div class="row">
-        <div class="col-sm-4">
-            Questions? <a href="@routes.Messages.newMessageForm(offer.getKeyOfferId, hotel.getHotelId)" class="btn btn-default" role="button">
-                <i class="fa fw fa-comment-o"></i> Mail me</a>
+        <div class="row">
+            <div class="col-sm-4">
+                Questions? <a href="@routes.Messages.newMessageForm(offer.getKeyOfferId, hotel.getHotelId)" class="btn btn-default" role="button"><i class="fa fw fa-comment-o"></i>
+                Mail me</a>
+                <a href="@routes.Offers.offerToPdf(offer.getKeyOfferId, hotel.getHotelId)" class="btn btn-default" role="button"><i class="fa fw fa-save"></i>
+                    Export to pdf</a>
+            </div>
         </div>
-    </div>
-
-}
+    }

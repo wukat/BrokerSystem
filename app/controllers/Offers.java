@@ -1,14 +1,23 @@
 package controllers;
 
+import com.lowagie.text.DocumentException;
 import models.*;
+import org.w3c.dom.Document;
+import org.xhtmlrenderer.pdf.ITextRenderer;
+import org.xhtmlrenderer.resource.XMLResource;
 import play.data.Form;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
+import play.libs.F;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
 import views.html.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,7 +44,7 @@ public class Offers extends Controller {
     @Transactional
     public static Result seeOffer(Integer offerId, Integer hotelId) {
         Offer offer = Offer.getNotExpiredById(offerId);
-        Hotel hotel = Hotel.getById(hotelId);
+        final Hotel hotel = Hotel.getById(hotelId);
         if (offer == null || hotel == null) {
             return ok(notFound.render("Wrong offer id"));
         }
@@ -44,13 +53,59 @@ public class Offers extends Controller {
             flash("info", "Log in to access premium offers.");
             return redirect(routes.Authentication.login());
         }
-        List<OfferedRoom> offeredRoomList = OfferedRoom.getByHotelAndOfferWithImages(offerId, hotelId);
+        final List<OfferedRoom> offeredRoomList = OfferedRoom.getByHotelAndOfferWithImages(offerId, hotelId);
         offer.setVisitCount(offer.getVisitCount() + 1);
         JPA.em().flush();
         if (offer.getDateTo().before(new Date())) {
             flash("info", "Offer has expired.");
         }
+        final Offer offer1 = offer;
+        F.Promise<String> promiseOfInt = F.Promise.promise(
+                new F.Function0<String>() {
+                    public String apply() {
+                        String fileNameWithPath = "Offer-o-" + offer1.getKeyOfferId() + "-h-" + hotel.getHotelId() + ".pdf";
+                        File f = new File(fileNameWithPath);
+                        if (!f.exists()) {
+                            try {
+                                Document document = XMLResource.load(new ByteArrayInputStream(offerToPdf.render(offeredRoomList, offer1, hotel).body().getBytes())).getDocument();
+                                ITextRenderer renderer = new ITextRenderer();
+                                renderer.setDocument(document, null);
+                                renderer.layout();
+                                FileOutputStream fos = new FileOutputStream(fileNameWithPath);
+                                renderer.createPDF(fos);
+                                fos.close();
+                            } catch (DocumentException | IOException e) {
+                                System.out.println(e);
+                            }
+                        }
+                        return fileNameWithPath;
+                    }
+                }
+        );
         return ok(offerView.render(offeredRoomList, offer, hotel));
+    }
+
+    @Transactional(readOnly = true)
+    public static Result offerToPdf(Integer offerId, Integer hotelId) {
+        Offer offer = Offer.getNotExpiredById(offerId);
+        Hotel hotel = Hotel.getById(hotelId);
+        if (offer == null || hotel == null) {
+            flash("error", "Access denied");
+            return redirect(routes.Application.index());
+        }
+        if (offer.getPremium() && !SessionManagement.isOk(session())) {
+            flash("url", "GET".equals(request().method()) ? request().uri() : "/");
+            flash("info", "Log in to access premium offers.");
+            return redirect(routes.Authentication.login());
+        }
+        String fileNameWithPath = "Offer-o-" + offer.getKeyOfferId() + "-h-" + hotel.getHotelId() + ".pdf";
+        File f = new File(fileNameWithPath);
+        if (f.exists()) {
+            return ok(f);
+        } else {
+            flash("error", "Sorry, requested file doesn't exist, try again later");
+            return redirect(routes.Offers.seeOffer(offerId, hotelId));
+        }
     }
 
     @Security.Authenticated(Secured.class)
