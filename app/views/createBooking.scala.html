@@ -1,10 +1,9 @@
-@(title: String)(content: Html)
-
+@(dates: List[Date], form: Form[Booking], offeredRoom: OfferedRoom)
 <!DOCTYPE html>
 
 <html>
     <head>
-        <title>@title</title>
+        <title>Booking</title>
         <meta http-equiv="Cache-control" content="max-age=0"/>
         <meta http-equiv="cache-control" content="no-cache"/>
         <meta http-equiv="expires" content="0"/>
@@ -96,7 +95,29 @@
                 @flash.get("error")
                 </div>
             }
-            @content
+
+            <div id="data" data="@dates.foldLeft("")((m: String, n: Date) => m.concat(" ").concat(n.format("yyyy-MM-dd")))">
+            </div>
+            @helper.form(routes.Rooms.bookRoom(offeredRoom.getOffer.getKeyOfferId, offeredRoom.getHotel.getHotelId, offeredRoom.getRoom.getRoomId)) {
+                <h1>Book room</h1>
+                @if(form.hasGlobalErrors) {
+                    <div class="alert alert-danger" role="alert">
+                    @form.globalError.message
+                    </div>
+                }
+                <input type="text" id="datepickerInputFrom" name="dateFrom" hidden="hidden" required="required"/>
+                <input type="text" id="datepickerInputTo" name="dateTo" hidden="hidden" required="required"/>
+                <div id="date-range">
+                    <div id="date-range-field">
+                        <span></span>
+                        <a href="#">&#9660;</a>
+                    </div>
+                    <div id="datepicker-calendar"></div>
+                </div>
+                <p>
+                    <button class="btn btn-primary" type="submit">Submit</button>
+                </p>
+            }
         </div>
         <footer class="footer">
             <div class="container">
@@ -106,11 +127,103 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js" type="text/javascript"></script>
         <script src="@routes.Assets.at("javascripts/jasny-bootstrap.min.js")" type="text/javascript"></script>
         <script src="@routes.Assets.at("javascripts/bootstrap.min.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.at("javascripts/jquery.tablesorter.js")"></script>
-        <script src="@routes.Assets.at("javascripts/jquery.tablesorter.widgets.min.js")"></script>
-        <script src="@routes.Assets.at("javascripts/jquery.tablesorter.pager.js")"></script>
-        <script src="@routes.Assets.at("javascripts/mine.js")"></script>
         <script src="@routes.Assets.at("javascripts/bootstrap-multiselect.js")"></script>
         <script src="@routes.Assets.at("javascripts/jquery.validate.min.js")"></script>
-    </body>
-</html>
+        <script type="text/javascript">
+        $ ( document ).ready ( function ( ) {
+        // div class dates
+        var from = new Date ( ) ;
+        var to = new Date ( from.getTime ( ) + 1000 * 60 * 60 * 24 * 60 ) ;
+        var toDate = createDate ( to ) ;
+        var fromDate = createDate ( from ) ;
+        var unavailableDates = $ ( '#data' ).attr ( 'data' ).split ( " " ) ;
+
+        function createDate ( date ) {
+        mnth = date.getMonth ( ) + 1 ;
+        if ( mnth < 10 ) {
+        mnth = "0" + mnth
+        }
+        day = date.getDate ( ) ;
+        if ( day < 10 ) {
+        day = "0" + day ;
+        }
+        return date.getFullYear ( ) + "-" + mnth + "-" + day ;
+        }
+
+        $ ( '#datepicker-calendar' ).DatePicker ( {
+        inline : true,
+        date :[ from, to ],
+        calendars : 3,
+        mode : 'range',
+        current : new Date ( to.getFullYear ( ), to.getMonth ( ) - 1, 1 ),
+
+        onRenderCell : function ( el, date ) {
+        dmy = createDate ( date ) ;
+        if ( $.inArray ( dmy, unavailableDates ) != - 1 ) {
+        return { disabled : true, className : 'redError' } }
+        else { if ( dmy < fromDate || dmy > toDate ) {
+        return { disabled : true, className : 'grayError' } }
+        else { return { } } }
+        },
+        onChange : function ( dates, el ) {
+        // update the range display
+        $ ( '#date-range-field span' ).text ( dates[ 0 ].getDate ( ) + ' ' + dates[ 0 ].getMonthName ( true ) + ', ' + dates[ 0 ].getFullYear ( ) + ' - ' +
+        dates[ 1 ].getDate ( ) + ' ' + dates[ 1 ].getMonthName ( true ) + ', ' + dates[ 1 ].getFullYear ( ) ) ;
+        $ ( '#datepickerInputFrom' ).attr('value', dates[ 0 ].getFullYear ( ) + "-" + (dates[ 0 ].getMonth ( ) + 1) + "-" + dates[ 0 ].getDate ( )) ;
+        $ ( '#datepickerInputTo' ).attr('value', dates[ 1 ].getFullYear ( ) + "-" + (dates[ 1 ].getMonth ( ) + 1) + "-" + dates[ 1 ].getDate ( ) );
+        },
+        onRangeChange : function ( dates, el ) {
+        var fr = createDate ( dates[ 0 ] ) ;
+        var t = createDate ( dates[ 1 ] ) ;
+        var flag = false ;
+        var arrayLength = unavailableDates.length ;
+        for ( var i = 0 ; i < arrayLength && flag == false ; i ++ ) {
+        if ( unavailableDates[ i ] >= fr && unavailableDates[ i ] <= t ) {
+        flag = true ;
+        }
+        }
+        if ( flag == true ) {
+        alert ( "Impossible!" ) ;
+        $ ( '#date-range-field span' ).text ( "" ) ;
+        $ ( '#datepicker-calendar' ).DatePickerClear ( ) ;
+        $ ( '#datepickerInputFrom' ).attr('value', dates[ 0 ].getFullYear ( ) + "-" + (dates[ 0 ].getMonth ( ) + 1) + "-" + dates[ 0 ].getDate ( )) ;
+        $ ( '#datepickerInputTo' ).attr('value', dates[ 1 ].getFullYear ( ) + "-" + (dates[ 1 ].getMonth ( ) + 1) + "-" + dates[ 1 ].getDate ( ) );
+        }
+        }
+        } ) ;
+
+        $ ( '#date-range-field' ).bind ( 'click', function ( ) {
+        $ ( '#datepicker-calendar' ).toggle ( ) ;
+        if ( $ ( '#date-range-field a' ).text ( ).charCodeAt ( 0 ) == 9660 ) {
+        // switch to up-arrow
+        $ ( '#date-range-field a' ).html ( '&#9650;' ) ;
+        $ ( '#date-range-field' ).css ( { borderBottomLeftRadius : 0, borderBottomRightRadius : 0 } ) ;
+        $ ( '#date-range-field a' ).css ( { borderBottomRightRadius : 0 } ) ;
+        } else {
+        // switch to down-arrow
+        $ ( '#date-range-field a' ).html ( '&#9660;' ) ;
+        $ ( '#date-range-field' ).css ( { borderBottomLeftRadius : 5, borderBottomRightRadius : 5 } ) ;
+        $ ( '#date-range-field a' ).css ( { borderBottomRightRadius : 5 } ) ;
+        }
+        return false ;
+        } ) ;
+
+        $ ( 'html' ).click ( function ( ) {
+        if ( $ ( '#datepicker-calendar' ).is ( ":visible" ) ) {
+        $ ( '#datepicker-calendar' ).hide ( ) ;
+        $ ( '#date-range-field a' ).html ( '&#9660;' ) ;
+        $ ( '#date-range-field' ).css ( { borderBottomLeftRadius : 5, borderBottomRightRadius : 5 } ) ;
+        $ ( '#date-range-field a' ).css ( { borderBottomRightRadius : 5 } ) ;
+        }
+        } ) ;
+
+        $ ( '#datepicker-calendar' ).click ( function ( event ) {
+        event.stopPropagation ( ) ;
+        } ) ;
+        $ ( '#datepicker-calendar' ).DatePickerClear ( ) ;
+        } ) ;
+
+        </script>
+        <script src="@routes.Assets.at("javascripts/datepicker.js")"></script>
+    </body></html>
+

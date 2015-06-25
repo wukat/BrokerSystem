@@ -10,7 +10,7 @@ import java.util.List;
  */
 //TODO opis tekstowy
 @Entity
-@Table(name="rooms")
+@Table(name = "rooms")
 public class Room {
 
     @Id
@@ -44,7 +44,9 @@ public class Room {
     private List<Image> images;
 
 
-    public Room(){}
+    public Room() {
+    }
+
     public Room(Integer internalRoomId, Hotel hotel, Integer bedsNumber, Boolean bathroom) {
         this.internalRoomId = internalRoomId;
         this.hotel = hotel;
@@ -135,6 +137,7 @@ public class Room {
         }
         return (Room) rooms.get(0);
     }
+
     @Override
     public String toString() {
         return "Room{" +

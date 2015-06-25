@@ -14,8 +14,10 @@ import views.html.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
+import static controllers.WebServiceCaller.*;
 import static play.data.Form.form;
 
 /**
@@ -146,7 +148,7 @@ public class Rooms extends Controller {
         Room room = Room.getById(roomId);
         String email = SessionManagement.getEmail(session());
         if (room != null && room.getHotel() != null && room.getHotel().getHotelId().equals(hotelId) && room.getHotel().getClientPublisher().getEmail().equals(email)) {
-           return ok(roomImages.render(room.getImages(), room));
+            return ok(roomImages.render(room.getImages(), room));
         }
         flash("error", "Access denied");
         return redirect(routes.Application.index());
@@ -162,4 +164,76 @@ public class Rooms extends Controller {
         return redirect(routes.Application.index());
     }
 
+    @Transactional(readOnly = true)
+    @Security.Authenticated(Secured.class)
+    public static Result bookingForm(Integer offerId, Integer hotelId, Integer roomId) {
+        List<Date> dates = getBookedDays(roomId, hotelId, offerId);
+        if (dates.size() == 0) {
+            if (flash("error") != null) {
+                return redirect(routes.Application.index());
+            }
+        }
+        return ok(createBooking.render(dates, form(Booking.class), OfferedRoom.getByAllWithImages(offerId, hotelId, roomId)));
+    }
+
+    @Transactional
+    @Security.Authenticated(Secured.class)
+    public static Result bookRoom(Integer offerId, Integer hotelId, Integer roomId) {
+        Form<Booking> form = form(Booking.class).bindFromRequest();
+        Long response = null;
+        if (form.hasErrors()) {
+            return redirect(routes.Rooms.bookingForm(offerId, hotelId, roomId));
+        }
+        OfferedRoom offeredRoom = OfferedRoom.getByAllWithImages(offerId, hotelId, roomId);
+        if (offeredRoom != null) {
+            String endpoint = offeredRoom.getOffer().getClientPublisher().getClientData().getEndpoint();
+            if (endpoint != null && offeredRoom.getHotel().getInternalHotelId() != null && offeredRoom.getRoom().getInternalRoomId() != null) {
+                response = bookRoomRemote(offeredRoom, form.get());
+                if (response == null && flash("error") != null) {
+                    return redirect(routes.Application.index());
+                }
+            }
+            Booking booking = form.get();
+            if ((response != null && response != -1) && canBeBooked(offeredRoom, booking.getDateFrom(), booking.getDateTo())) {
+                booking.setInternalBookingId(response);
+                booking.setOfferedRoom(offeredRoom);
+                booking.setCancelled(false);
+                Client c = Client.getClientByEmail(SessionManagement.getEmail(session()));
+                booking.setClient(c);
+                JPA.em().persist(booking);
+                flash("success", "Room booked");
+                return redirect(routes.UserProfile.profile(c.getClientId()));
+            } else {
+                if (flash("error") == null)
+                    flash("error", "Selected dates are already taken! Please try again");
+                return redirect(routes.Rooms.bookingForm(offerId, hotelId, roomId));
+            }
+        } else {
+            flash("error", "Access denied");
+        }
+        return redirect(routes.Application.index());
+    }
+
+    @Transactional
+    @Security.Authenticated(Secured.class)
+    public static Result cancelBooking(Long bookingId) {
+        Booking booking = Booking.getById(bookingId);
+        if (booking == null) {
+            flash("Access denied");
+            return redirect(routes.Application.index());
+        }
+        if (booking.canBeCancelled()) {
+            Boolean cancel = cancel(booking);
+            if (!cancel) {
+                return redirect(routes.UserProfile.profile(Client.getClientByEmail(SessionManagement.getEmail(session())).getClientId()));
+            }
+            booking.setCancelled(true);
+            JPA.em().flush();
+            flash("success", "Booking cancelled");
+            return redirect(routes.UserProfile.profile(Client.getClientByEmail(SessionManagement.getEmail(session())).getClientId()));
+        } else {
+            flash("error", "Booking cannot be cancelled");
+            return redirect(routes.UserProfile.profile(Client.getClientByEmail(SessionManagement.getEmail(session())).getClientId()));
+        }
+    }
 }

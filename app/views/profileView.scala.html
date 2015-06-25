@@ -28,30 +28,34 @@
                         <th>From</th>
                         <th>To</th>
                         <th>Hotel</th>
-                        <th class="filter-false">Details</th>
+                        <th>To pay per day</th>
+                        <th>Pay</th>
+                        <th class="filter-false">Room</th>
                         <th class="filter-false">Cancel</th>
                     </tr>
                 </thead>
                 <tbody>
                 @for(booking <- client.getBookings) {
                     <tr>
-                        <td>@if(booking.getDateTo.before(new Date) && !booking.getCancelled) {
+                        <td>@if(booking.getDateTo.after(new Date) && !booking.getCancelled) {
                             Active
                         } else {
-                            Archive
+                            Archived
                         }</td>
-                        <td>@booking.getDateFrom</td>
-                        <td>@booking.getDateTo</td>
+                        <td>@booking.getDateFrom.format("yyyy-MM-dd")</td>
+                        <td>@booking.getDateTo.format("yyyy-MM-dd")</td>
                         <td>@booking.getOfferedRoom.getHotel.getName</td>
-                        <td>View details</td>
-                        <td>@if(booking.canBeCancelled) {
-                            <a class="list-item" href="#"><i class="fa fa-fw fa-trash-o"></i>Cancel</a>
+                        <td>@booking.getOfferedRoom.getOffer.getPrice</td>
+                        <td>@booking.getOfferedRoom.getOffer.getClientPublisher.getClientData.getPaymentData</td>
+                        <td><a class="list-item" href="@routes.Rooms.showOfferedRoom(booking.getOfferedRoom.getOffer.getKeyOfferId, booking.getOfferedRoom.getHotel.getHotelId, booking.getOfferedRoom.getRoom.getRoomId)"><i class="fa fa-fw fa-eye"></i>View</a></td>
+                        <td>@if(booking.canBeCancelled && !booking.getCancelled) {
+                            <a class="list-item" href="@routes.Rooms.cancelBooking(booking.getBookingId)"><i class="fa fa-fw fa-trash-o"></i>Cancel</a>
                         }</td>
                     </tr>
                 }
                 </tbody>
                 <tfoot>
-                    <th colspan="6" class="ts-pager form-horizontal">
+                    <th colspan="8" class="ts-pager form-horizontal">
                         <button type="button" class="btn first"><i class="icon-step-backward glyphicon glyphicon-step-backward"></i></button>
                         <button type="button" class="btn prev"><i class="icon-arrow-left glyphicon glyphicon-backward"></i></button>
                         <span class="pagedisplay"></span> <!-- this can be any element, including an input -->

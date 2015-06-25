@@ -1,5 +1,7 @@
 package models;
 
+import play.db.jpa.JPA;
+
 import javax.persistence.*;
 import java.util.Calendar;
 import java.util.Date;
@@ -102,6 +104,10 @@ public class Booking {
 
     public void setCancelled(Boolean cancelled) {
         this.cancelled = cancelled;
+    }
+
+    public static Booking getById(Long id) {
+        return JPA.em().find(Booking.class, id);
     }
 
     public boolean canBeCancelled() {

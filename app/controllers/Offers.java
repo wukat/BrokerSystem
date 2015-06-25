@@ -59,36 +59,13 @@ public class Offers extends Controller {
         if (offer.getDateTo().before(new Date())) {
             flash("info", "Offer has expired.");
         }
-        final Offer offer1 = offer;
-        F.Promise<String> promiseOfInt = F.Promise.promise(
-                new F.Function0<String>() {
-                    public String apply() {
-                        String fileNameWithPath = "Offer-o-" + offer1.getKeyOfferId() + "-h-" + hotel.getHotelId() + ".pdf";
-                        File f = new File(fileNameWithPath);
-                        if (!f.exists()) {
-                            try {
-                                Document document = XMLResource.load(new ByteArrayInputStream(offerToPdf.render(offeredRoomList, offer1, hotel).body().getBytes())).getDocument();
-                                ITextRenderer renderer = new ITextRenderer();
-                                renderer.setDocument(document, null);
-                                renderer.layout();
-                                FileOutputStream fos = new FileOutputStream(fileNameWithPath);
-                                renderer.createPDF(fos);
-                                fos.close();
-                            } catch (DocumentException | IOException e) {
-                                System.out.println(e);
-                            }
-                        }
-                        return fileNameWithPath;
-                    }
-                }
-        );
         return ok(offerView.render(offeredRoomList, offer, hotel));
     }
 
     @Transactional(readOnly = true)
     public static Result offerToPdf(Integer offerId, Integer hotelId) {
-        Offer offer = Offer.getNotExpiredById(offerId);
-        Hotel hotel = Hotel.getById(hotelId);
+        final Offer offer = Offer.getNotExpiredById(offerId);
+        final Hotel hotel = Hotel.getById(hotelId);
         if (offer == null || hotel == null) {
             flash("error", "Access denied");
             return redirect(routes.Application.index());
@@ -100,12 +77,21 @@ public class Offers extends Controller {
         }
         String fileNameWithPath = "Offer-o-" + offer.getKeyOfferId() + "-h-" + hotel.getHotelId() + ".pdf";
         File f = new File(fileNameWithPath);
-        if (f.exists()) {
-            return ok(f);
-        } else {
-            flash("error", "Sorry, requested file doesn't exist, try again later");
-            return redirect(routes.Offers.seeOffer(offerId, hotelId));
+        final List<OfferedRoom> offeredRoomList = OfferedRoom.getByHotelAndOfferWithImages(offerId, hotelId);
+        try {
+            Document document = XMLResource.load(new ByteArrayInputStream(offerToPdf.render(offeredRoomList, offer, hotel).body().getBytes())).getDocument();
+            ITextRenderer renderer = new ITextRenderer();
+            renderer.setDocument(document, null);
+            renderer.layout();
+            FileOutputStream fos = new FileOutputStream(fileNameWithPath);
+            renderer.createPDF(fos);
+            fos.close();
+        } catch (DocumentException | IOException e) {
+            System.out.println(e);
+            flash("error", "Sorry, an error occurred. Please, try again!");
+            return ok(offerView.render(offeredRoomList, offer, hotel));
         }
+        return ok(f);
     }
 
     @Security.Authenticated(Secured.class)

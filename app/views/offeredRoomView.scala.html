@@ -103,8 +103,8 @@
                 Questions?
                 <a href="@routes.Messages.newMessageForm(offeredRoom.getOffer.getKeyOfferId, offeredRoom.getHotel.getHotelId, offeredRoom.getRoom.getRoomId)" class="btn btn-default" role="button">
                     <i class="fa fw fa-comment-o"></i> Mail me</a>
-                <button type="button" class="btn btn-default">
-                    <i class="fa fw fa-book"></i> Book room</button>
+                <a href="@routes.Rooms.bookingForm(offeredRoom.getOffer.getKeyOfferId, offeredRoom.getHotel.getHotelId, offeredRoom.getRoom.getRoomId)" role="button" class="btn btn-default">
+                    <i class="fa fw fa-book"></i> Book room</a>
             </div>
         </div>
         <div class="row">

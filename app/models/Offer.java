@@ -228,14 +228,12 @@ public class Offer implements Comparable<Offer> {
         return "Offer{" +
                 "keyOfferId=" + keyOfferId +
                 ", offerId=" + offerId +
-                ", clientPublisher=" + clientPublisher +
                 ", dateFrom=" + dateFrom +
                 ", dateTo=" + dateTo +
                 ", price=" + price +
                 ", description='" + description + '\'' +
                 ", premium=" + premium +
                 ", visitCount=" + visitCount +
-                ", offeredRooms=" + offeredRooms +
                 '}';
     }
 

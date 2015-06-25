@@ -1275,7 +1275,7 @@
 
 			// computeTableHeaderCellIndexes from:
 			// http://www.javascripttoolbox.com/lib/table/examples.php
-			// http://www.javascripttoolbox.com/temp/table_cellindex.html
+			// http://www.javascripttoolbox.com/createBooking/table_cellindex.html
 			ts.computeColumnIndex = function(trs) {
 				var i, j, k, l, $cell, cell, cells, rowIndex, cellId, rowSpan, colSpan, firstAvailCol,
 					matrix = [],

@@ -11,6 +11,14 @@ import org.hibernate.service.ServiceRegistryBuilder;
 
 import javax.jws.WebMethod;
 import javax.jws.WebService;
+import javax.xml.namespace.QName;
+import javax.xml.soap.SOAPConstants;
+import javax.xml.soap.SOAPFactory;
+import javax.xml.soap.SOAPFault;
+import javax.xml.ws.soap.MTOM;
+import javax.xml.ws.soap.SOAPFaultException;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,9 +26,11 @@ import java.util.List;
 /**
  * Created by wukat on 15.06.15.
  */
+@MTOM
 @WebService(name = "HotelService", targetNamespace = "http://localhost:8080/Hotel_war_exploded/Hotel")
 public class HotelWS {
 
+    private static int count = 0;
     private static final Long dayInMiliSecs = 86400000L;
     private static SessionFactory ourSessionFactory;
 
@@ -106,6 +116,7 @@ public class HotelWS {
                 InnerBooking innerBooking = new InnerBooking(null, from, to, ((OfferedRoom) rooms.get(0)).getHotel(), ((OfferedRoom) rooms.get(0)).getRoom());
                 Transaction t = s.beginTransaction();
                 s.persist(innerBooking);
+                System.out.println(innerBooking.getInternalBookingId());
                 t.commit();
                 s.close();
                 return innerBooking.getInternalBookingId();
@@ -125,7 +136,28 @@ public class HotelWS {
         s.close();
     }
 
-    // faktura
+    @WebMethod
+    public int uploadInvoice(javax.activation.DataHandler pdfToUpload) {
+        try {
+            String filename = "invoice"+(count++)+".pdf";
+            File file = new File(filename);
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            pdfToUpload.writeTo(fileOutputStream);
+            fileOutputStream.flush();
+            fileOutputStream.close();
+            return 500;
+        } catch (Exception e) {
+            try {
+                SOAPFault fault = SOAPFactory.newInstance().createFault();
+                fault.setFaultString(e.getMessage());
+                fault.setFaultCode(new QName(SOAPConstants.URI_NS_SOAP_ENVELOPE, "Server"));
+                throw new SOAPFaultException(fault);
+            } catch (Exception e2) {
+                throw new RuntimeException("Upload PDF: Problem processing SOAP Fault on service-side: " +
+                        e2.getMessage());
+            }
+        }
+    }
 
     public static void main(String[] args) {
         Offer testOffer1 = new Offer(null, null, new Date(), new Date(), 25.0, "calkiem ladnie ale zimno", true, 0, null);
