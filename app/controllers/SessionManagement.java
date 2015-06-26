@@ -13,9 +13,11 @@ public class SessionManagement {
 
     private static String[] getParts(Http.Session session) {
         try {
-            if (session.containsKey("k")) {
-                Global.jwe.setCompactSerialization(session.get("k"));
-                return Global.jwe.getPayload().split(" ");
+            synchronized (SessionManagement.class) {
+                if (session.containsKey("k")) {
+                    Global.jwe.setCompactSerialization(session.get("k"));
+                    return Global.jwe.getPayload().split(" ");
+                }
             }
         } catch (JoseException e) {
             Logger.debug("Encryption failed");
