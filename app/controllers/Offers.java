@@ -1,23 +1,18 @@
 package controllers;
 
-import com.lowagie.text.DocumentException;
+import logic.ClientLogic;
+import logic.OffersLogic;
+import logic.SessionManagement;
+import logic.WebServiceCaller;
 import models.*;
-import org.w3c.dom.Document;
-import org.xhtmlrenderer.pdf.ITextRenderer;
-import org.xhtmlrenderer.resource.XMLResource;
 import play.data.Form;
-import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
-import play.libs.F;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
 import views.html.*;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,13 +48,11 @@ public class Offers extends Controller {
             flash("info", "Log in to access premium offers.");
             return redirect(routes.Authentication.login());
         }
-        final List<OfferedRoom> offeredRoomList = OfferedRoom.getByHotelAndOfferWithImages(offerId, hotelId);
-        offer.setVisitCount(offer.getVisitCount() + 1);
-        JPA.em().flush();
+        OffersLogic.addViewed(offer);
         if (offer.getDateTo().before(new Date())) {
             flash("info", "Offer has expired.");
         }
-        return ok(offerView.render(offeredRoomList, offer, hotel));
+        return ok(offerView.render(OfferedRoom.getByHotelAndOfferWithImages(offerId, hotelId), offer, hotel));
     }
 
     @Transactional(readOnly = true)
@@ -75,19 +68,9 @@ public class Offers extends Controller {
             flash("info", "Log in to access premium offers.");
             return redirect(routes.Authentication.login());
         }
-        String fileNameWithPath = "Offer-o-" + offer.getKeyOfferId() + "-h-" + hotel.getHotelId() + ".pdf";
-        File f = new File(fileNameWithPath);
         final List<OfferedRoom> offeredRoomList = OfferedRoom.getByHotelAndOfferWithImages(offerId, hotelId);
-        try {
-            Document document = XMLResource.load(new ByteArrayInputStream(offerToPdf.render(offeredRoomList, offer, hotel).body().getBytes())).getDocument();
-            ITextRenderer renderer = new ITextRenderer();
-            renderer.setDocument(document, null);
-            renderer.layout();
-            FileOutputStream fos = new FileOutputStream(fileNameWithPath);
-            renderer.createPDF(fos);
-            fos.close();
-        } catch (DocumentException | IOException e) {
-            System.out.println(e);
+        File f = OffersLogic.toPdf(offeredRoomList, offer, hotel);
+        if (f == null) {
             flash("error", "Sorry, an error occurred. Please, try again!");
             return ok(offerView.render(offeredRoomList, offer, hotel));
         }
@@ -101,7 +84,7 @@ public class Offers extends Controller {
         if (offer == null) {
             return ok(notFound.render("Wrong offer id"));
         }
-        if (offer.getClientPublisher().getEmail().equals(SessionManagement.getEmail(session()))) {
+        if (OffersLogic.isClientsOffer(offer, SessionManagement.getEmail(session()))) {
             return ok(offerDetailsView.render(offer));
         }
         flash("info", "Access denied");
@@ -112,7 +95,7 @@ public class Offers extends Controller {
     @Transactional(readOnly = true)
     public static Result newOfferForm() {
         String email = SessionManagement.getEmail(session());
-        if (Client.isBusinessClient(email)) {
+        if (ClientLogic.isBusinessClient(email)) {
             return ok(createOffer.render(form(Offer.class), Client.getClientByEmail(email)));
         }
         flash("error", "You are not allowed to create new offers.");
@@ -124,7 +107,7 @@ public class Offers extends Controller {
     public static Result editOfferForm(Integer offerId) {
         String email = SessionManagement.getEmail(session());
         Offer offer = Offer.getNotExpiredById(offerId);
-        if (Client.isBusinessClient(email) && offer != null && offer.getClientPublisher().getEmail().equals(email)) {
+        if (ClientLogic.isBusinessClient(email) && offer != null && OffersLogic.isClientsOffer(offer, email)) {
             Form<Offer> offerForm = form(Offer.class).fill(offer);
             return ok(createOffer.render(offerForm, Client.getClientByEmail(email)));
         }
@@ -136,36 +119,15 @@ public class Offers extends Controller {
     @Transactional
     public static Result newOffer() {
         String email = SessionManagement.getEmail(session());
-        if (Client.isBusinessClient(email)) {
+        if (ClientLogic.isBusinessClient(email)) {
             Form<Offer> offerForm = form(Offer.class).bindFromRequest();
             if (offerForm.hasErrors()) {
                 return badRequest(createOffer.render(offerForm, Client.getClientByEmail(email)));
             }
             Map<String, String[]> map = request().body().asFormUrlEncoded();
-            String[] checkedVal = map.get("rooms");
-            LinkedList<OfferedRoom> offeredRooms = new LinkedList<>();
             Offer offer = offerForm.get();
             offer.setPremium(offerForm.data().get("premium") != null);
-            offer.setVisitCount(0);
-            offer.setClientPublisher(Client.getClientByEmail(email));
-            boolean flag = true;
-            for (String a : checkedVal) {
-                if (a.matches("[0-9]+ [0-9]+")) {
-                    Hotel hotel = Hotel.getById(Integer.parseInt(a.split(" ")[0]));
-                    Room room = Room.getById(Integer.parseInt(a.split(" ")[1]));
-                    if (hotel != null && room != null) {
-                        offeredRooms.add(new OfferedRoom(hotel, room, offer));
-                    } else {
-                        flag = false;
-                    }
-                } else {
-                    flag = false;
-
-                }
-            }
-            if (flag) {
-                offer.setOfferedRooms(offeredRooms);
-                JPA.em().persist(offer);
+            if (OffersLogic.newOffer(offer, map, Client.getClientByEmail(SessionManagement.getEmail(session())))) {
                 flash("success", "Offer added successfully");
                 return redirect(routes.UserProfile.profile(Client.getClientId(email)));
             } else {
@@ -182,47 +144,20 @@ public class Offers extends Controller {
     public static Result editOffer(Integer offerId) {
         String email = SessionManagement.getEmail(session());
         Offer offer = Offer.getNotExpiredById(offerId);
-        if (Client.isBusinessClient(email) && offer != null && offer.getClientPublisher().getEmail().equals(email)) {
+        if (ClientLogic.isBusinessClient(email) && offer != null && OffersLogic.isClientsOffer(offer, email)) {
             Form<Offer> offerForm = form(Offer.class).bindFromRequest();
             if (offerForm.hasErrors()) {
                 return badRequest(createOffer.render(offerForm, Client.getClientByEmail(email)));
             }
             Map<String, String[]> map = request().body().asFormUrlEncoded();
-            String[] checkedVal = map.get("rooms");
-            LinkedList<OfferedRoom> offeredRooms = new LinkedList<>();
             Offer offerNew = offerForm.get();
             offerNew.setPremium(offerForm.data().get("premium") != null);
-            offerNew.setVisitCount(0);
-            offerNew.setClientPublisher(Client.getClientByEmail(email));
-            boolean flag = true;
-            for (String a : checkedVal) {
-                if (a.matches("[0-9]+ [0-9]+")) {
-                    Hotel hotel = Hotel.getById(Integer.parseInt(a.split(" ")[0]));
-                    Room room = Room.getById(Integer.parseInt(a.split(" ")[1]));
-                    if (hotel != null && room != null) {
-                        offeredRooms.add(new OfferedRoom(hotel, room, offerNew));
-                    } else {
-                        flag = false;
-                    }
-                } else {
-                    flag = false;
-
-                }
-            }
-            if (flag) {
-                offerNew.setOfferedRooms(offeredRooms);
-                Date today = new Date();
-                offer.setDateTo(today);
-                if (offer.getDateFrom().after(today))
-                    offer.setDateFrom(today);
-                JPA.em().merge(offer);
-                JPA.em().persist(offerNew);
+            if (OffersLogic.editOffer(offerNew, offer, map, Client.getClientByEmail(SessionManagement.getEmail(session())))) {
                 flash("success", "Offer updated successfully");
                 return redirect(routes.UserProfile.profile(Client.getClientId(email)));
-            } else {
-                flash("error", "Error");
-                return redirect(routes.Application.index());
             }
+            flash("error", "Error");
+            return redirect(routes.Application.index());
         }
         flash("error", "You are not allowed to create new offers.");
         return redirect(routes.Application.index());
@@ -233,20 +168,46 @@ public class Offers extends Controller {
     public static Result removeOffer(Integer offerId) {
         String email = SessionManagement.getEmail(session());
         Offer offer = Offer.getNotExpiredById(offerId);
-        if (Client.isBusinessClient(email) && offer != null && offer.getClientPublisher().getEmail().equals(email)) {
-            Date today = new Date();
-            if (offer.getDateTo().before(today)) {
+        if (ClientLogic.isBusinessClient(email) && offer != null && OffersLogic.isClientsOffer(offer, email)) {
+            if (OffersLogic.deactivate(offer)) {
                 flash("info", "Offer was inactive before!");
             } else {
-                offer.setDateTo(today);
-                if (offer.getDateFrom().after(today))
-                    offer.setDateFrom(today);
-                JPA.em().merge(offer);
                 flash("success", "Offer deactivated successfully");
             }
             return redirect(routes.UserProfile.profile(Client.getClientId(email)));
         }
         flash("error", "Access denied");
+        return redirect(routes.Application.index());
+    }
+
+    @Transactional
+    @Security.Authenticated(Secured.class)
+    public static Result synchronize() {
+        String email = SessionManagement.getEmail(session());
+        Client client = Client.getClientByEmail(email);
+        if (ClientLogic.isBusinessClient(email) && client.getClientData() != null) {
+            if (client.getClientData().getEndpoint() != null) {
+                String xml = WebServiceCaller.getXml("<ns:getOffers></ns:getOffers>", client.getClientData().getEndpoint());
+                if (xml == null) {
+                    flash("error", "Connection refused");
+                }
+                LinkedList<Offer> offers = Offer.getOffersFromXml(xml);
+                if (offers.size() == 0) {
+                    flash("info", "Nothing to update");
+                } else {
+                    if (Offer.updateOrSave(offers, client)) {
+                        flash("success", "Offers updated");
+                    } else {
+                        flash("info", "No changes");
+                    }
+                }
+                return redirect(routes.UserProfile.profile(client.getClientId()));
+            } else {
+                flash("error", "Endpoint not defined");
+            }
+        } else {
+            flash("error", "Access denied");
+        }
         return redirect(routes.Application.index());
     }
 }

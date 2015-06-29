@@ -1,5 +1,7 @@
 package controllers;
 
+import logic.MessagesLogic;
+import logic.SessionManagement;
 import models.*;
 import play.data.Form;
 import play.db.jpa.JPA;
@@ -30,7 +32,6 @@ public class Messages extends Controller {
             if (offer != null || hotel != null) {
                 return ok(createMessage.render(offer, hotelId, null, form(Message.class)));
             }
-
         } else {
             OfferedRoom offeredRoom = OfferedRoom.getByAllWithImages(offerId, hotelId, roomId);
             if (offeredRoom != null) {
@@ -46,17 +47,11 @@ public class Messages extends Controller {
     public static Result message(Integer messageId) {
         Message message = Message.getById(messageId);
         Client client = Client.getClientByEmail(SessionManagement.getEmail(session()));
-        if (message == null || !(message.getClientRecipient().getClientId().equals(client.getClientId()) || message.getClientSender().getClientId().equals(client.getClientId()))) {
+        if (!MessagesLogic.canBeRead(message, client)) {
             flash("error", "Access denied");
             return redirect(routes.Application.index());
         }
-        if (message.getClientRecipient().getClientId().equals(client.getClientId())) {
-            if (!message.getRead()) {
-                message.setRead(true);
-                client.setUnreadMessages(client.getUnreadMessages() - 1);
-                JPA.em().flush();
-            }
-        }
+        MessagesLogic.setRead(message, client);
         return ok(conversation.render(message, client, form(Message.class)));
     }
 
@@ -65,16 +60,7 @@ public class Messages extends Controller {
     public static Result newMessage(Integer clientId) {
         Client sender = Client.getClientByEmail(SessionManagement.getEmail(session()));
         Client receiver = Client.getClientById(clientId);
-
-        Form<Message> messageForm = form(Message.class).bindFromRequest();
-        Message message = messageForm.get();
-        message.setClientRecipient(receiver);
-        message.setClientSender(sender);
-        message.setDate(new Date());
-        message.setRead(false);
-        JPA.em().persist(message);
-        receiver.setUnreadMessages(receiver.getUnreadMessages() + 1);
-        JPA.em().flush();
+        MessagesLogic.newMessage(form(Message.class).bindFromRequest().get(), sender, receiver);
         flash("success", "Message sent");
         return redirect(routes.Messages.sent());
     }

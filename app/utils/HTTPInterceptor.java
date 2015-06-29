@@ -1,4 +1,4 @@
-package controllers;
+package utils;
 
 import play.libs.F;
 import play.mvc.Action;

@@ -8,7 +8,6 @@ import java.util.List;
 /**
  * Created by magdalena on 01.06.15.
  */
-//TODO opis tekstowy
 @Entity
 @Table(name = "rooms")
 public class Room {

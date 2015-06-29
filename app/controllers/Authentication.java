@@ -1,7 +1,8 @@
 package controllers;
 
 import global.Global;
-import models.Client;
+import logic.ClientLogic;
+import logic.SessionManagement;
 import org.jose4j.lang.JoseException;
 import play.data.Form;
 import play.data.validation.Constraints;
@@ -9,6 +10,7 @@ import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import utils.HTTPSmust;
 import views.html.login;
 
 import static play.data.Form.form;
@@ -66,9 +68,9 @@ public class Authentication extends Controller {
         public String password;
 
         public String validate() {
-            if (Client.authenticate(email, password) == null) {
+            if (ClientLogic.authenticate(email, password) == null) {
                 return "Invalid user or password";
-            } else if (!Client.checkActive(email)) {
+            } else if (!ClientLogic.checkActive(email)) {
                 return "Your account isn't activated yet! Check your email";
             }
             return null;

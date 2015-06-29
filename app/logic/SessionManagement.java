@@ -1,4 +1,4 @@
-package controllers;
+package logic;
 
 import global.Global;
 import org.jose4j.lang.JoseException;

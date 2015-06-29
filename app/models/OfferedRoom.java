@@ -9,7 +9,6 @@ import java.util.List;
 /**
  * Created by magdalena on 01.06.15.
  */
-//TODO opis tekstowy
 @Entity
 @Table(name="offered_rooms")
 public class OfferedRoom implements Comparable<OfferedRoom> {

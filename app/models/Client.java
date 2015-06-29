@@ -197,19 +197,6 @@ public class Client implements Serializable {
                 '}';
     }
 
-    public static String authenticate(String email, String password) {
-        List result = JPA.em().createQuery("SELECT c.password FROM Client c WHERE c.email =:email").setParameter("email", email).getResultList();
-        if (result.size() == 1) {
-            try {
-                if (BCrypt.checkpw(password, (String) result.get(0)))
-                    return "";
-            } catch (Exception e) {
-                Logger.debug("Password in database not encrypted, authenticate method");
-            }
-        }
-        return null;
-    }
-
     public String validate() {
         if (password.length() < 6) {
             return "Password to short, insert at least 6 signs";
@@ -249,50 +236,11 @@ public class Client implements Serializable {
         }
     }
 
-    public static void activateClient(Integer id) {
-        JPA.em().createQuery("UPDATE Client c SET active=true where c.clientId=:id").setParameter("id", id).executeUpdate();
-    }
-
-    public static boolean checkActive(String email) {
-        Object result = JPA.em().createQuery("SELECT c.active FROM Client c WHERE c.email =:email").setParameter("email", email).getSingleResult();
-        if (result != null) {
-            return (Boolean) result;
-        }
-        return false;
-    }
-
     public static Client getClientById(Integer id) {
         return JPA.em().find(Client.class, id);
     }
 
     public static Client getClientByEmail(String email) {
         return (Client) JPA.em().createQuery("SELECT c FROM Client c WHERE c.email =:email").setParameter("email", email).getSingleResult();
-    }
-
-    public static boolean isClient(Integer id) {
-        return getClientById(id) != null;
-    }
-
-    public static boolean isBusinessClient(String email) {
-        Role clientRole = Client.getClientRole(email);
-        return (clientRole != null && clientRole.getRole().equals("business"));
-    }
-
-    public LinkedList<Message> getConversation(Integer clientId) {
-        Set<Message> conversationSet = new HashSet<>();
-        for (Message m : messagesReceived) {
-            if (m.getClientSender().getClientId().equals(clientId)) {
-                conversationSet.add(m);
-            }
-        }
-        for (Message m : messagesSent) {
-            if (m.getClientRecipient().getClientId().equals(clientId)) {
-                conversationSet.add(m);
-            }
-        }
-        LinkedList<Message> conversation = new LinkedList<>(conversationSet);
-        Collections.sort(conversation);
-        Collections.reverse(conversation);
-        return conversation;
     }
 }

@@ -1,23 +1,22 @@
 package controllers;
 
+import logic.ClientLogic;
+import logic.HotelsLogic;
+import logic.RoomsLogic;
+import logic.SessionManagement;
 import models.*;
-import org.apache.commons.io.FileUtils;
-import play.Logger;
 import play.data.Form;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
-import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
 import views.html.*;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import static controllers.WebServiceCaller.*;
+import static logic.WebServiceCaller.*;
 import static play.data.Form.form;
 
 /**
@@ -29,9 +28,9 @@ public class Rooms extends Controller {
     @Transactional(readOnly = true)
     public static Result allInHotel(Integer hotelId) {
         String email = SessionManagement.getEmail(session());
-        if (Client.isBusinessClient(email)) {
+        if (ClientLogic.isBusinessClient(email)) {
             Hotel hotel = Hotel.getById(hotelId);
-            if (hotel != null && hotel.getClientPublisher().getEmail().equals(email)) {
+            if (hotel != null && HotelsLogic.isClientsHotel(hotel, email)) {
                 return ok(roomsView.render(hotel));
             }
         }
@@ -43,9 +42,9 @@ public class Rooms extends Controller {
     @Transactional(readOnly = true)
     public static Result newRoomForm(Integer hotelId) {
         String email = SessionManagement.getEmail(session());
-        if (Client.isBusinessClient(email)) {
+        if (ClientLogic.isBusinessClient(email)) {
             Hotel hotel = Hotel.getById(hotelId);
-            if (hotel != null && hotel.getClientPublisher().getEmail().equals(email)) {
+            if (hotel != null && HotelsLogic.isClientsHotel(hotel, email)) {
                 return ok(createRoom.render(form(Room.class), hotel));
             }
         }
@@ -57,18 +56,15 @@ public class Rooms extends Controller {
     @Transactional
     public static Result newRoom(Integer hotelId) {
         String email = SessionManagement.getEmail(session());
-        if (Client.isBusinessClient(email)) {
+        if (ClientLogic.isBusinessClient(email)) {
             Hotel hotel = Hotel.getById(hotelId);
-            if (hotel != null && hotel.getClientPublisher().getEmail().equals(email)) {
+            if (hotel != null && HotelsLogic.isClientsHotel(hotel, email)) {
                 Form<Room> roomForm = form(Room.class).bindFromRequest();
                 if (roomForm.hasErrors()) {
                     return badRequest(createRoom.render(roomForm, hotel));
                 }
                 Room room = roomForm.get();
-                room.setHotel(hotel);
-                room.setHasImages(false);
-                room.setBathroom(roomForm.field("bathroom").value() != null);
-                JPA.em().persist(room);
+                RoomsLogic.newRoom(room, hotel, roomForm.field("bathroom").value() != null);
                 flash("info", "Upload images describing your room!");
                 return redirect(routes.Rooms.uploadForm(hotelId, room.getRoomId()));
             }
@@ -82,7 +78,7 @@ public class Rooms extends Controller {
     public static Result uploadForm(Integer hotelId, Integer roomId) {
         Room room = Room.getById(roomId);
         String email = SessionManagement.getEmail(session());
-        if (room != null && room.getHotel() != null && room.getHotel().getHotelId().equals(hotelId) && room.getHotel().getClientPublisher().getEmail().equals(email)) {
+        if (room != null && room.getHotel() != null && room.getHotel().getHotelId().equals(hotelId) && HotelsLogic.isClientsHotel(room.getHotel(), email)) {
             return ok(imageUpload.render(hotelId, roomId));
         }
         flash("error", "Access denied.");
@@ -94,24 +90,8 @@ public class Rooms extends Controller {
     public static Result upload(Integer hotelId, Integer roomId) {
         Room room = Room.getById(roomId);
         String email = SessionManagement.getEmail(session());
-        if (room != null && room.getHotel() != null && room.getHotel().getHotelId().equals(hotelId) && room.getHotel().getClientPublisher().getEmail().equals(email)) {
-            Http.MultipartFormData body = request().body().asMultipartFormData();
-            List<Http.MultipartFormData.FilePart> files = body.getFiles();
-            room.setHasImages(true);
-            JPA.em().merge(room);
-            for (Http.MultipartFormData.FilePart p : files) {
-                Image img = new Image(room);
-                img.setContent("");
-                JPA.em().persist(img);
-                try {
-                    FileUtils.copyFile(p.getFile(), new File("public/images/products", img.getImageId().toString()));
-                    img.setContent("/assets/images/products/" + img.getImageId().toString());
-                    JPA.em().merge(img);
-                } catch (IOException ioe) {
-                    Logger.debug("sth wrong with image");
-                    JPA.em().remove(img);
-                }
-            }
+        if (room != null && room.getHotel() != null && room.getHotel().getHotelId().equals(hotelId) && HotelsLogic.isClientsHotel(room.getHotel(), email)) {
+            RoomsLogic.uploadImages(room, request().body().asMultipartFormData().getFiles());
             flash("success", "Images uploaded successfully");
             return redirect(routes.Rooms.allInHotel(hotelId));
         }
@@ -124,18 +104,15 @@ public class Rooms extends Controller {
     public static Result removeImage(Integer hotelId, Integer roomId, Integer imageId) {
         Room room = Room.getById(roomId);
         String email = SessionManagement.getEmail(session());
-        if (room != null && room.getHotel() != null && room.getHotel().getHotelId().equals(hotelId) && room.getHotel().getClientPublisher().getEmail().equals(email)) {
+        if (room != null && room.getHotel() != null && room.getHotel().getHotelId().equals(hotelId) && HotelsLogic.isClientsHotel(room.getHotel(), email)) {
             Image image = Image.getById(imageId);
-            if (image.getRoom().getRoomId().equals(roomId)) {
-                if (room.getImages().size() > 1) {
-                    image.getRoom().getImages().remove(image);
-                    JPA.em().remove(image);
+            if (image != null && image.getRoom().getRoomId().equals(roomId)) {
+                if (RoomsLogic.removeImage(image, room)) {
                     flash("success", "Images removed successfully");
                     return ok();
-                } else {
-                    flash("error", "Room description have to contain at least one image!");
-                    return redirect(routes.Rooms.roomImages(hotelId, roomId));
                 }
+                flash("error", "Room description has to contain at least one image!");
+                return redirect(routes.Rooms.roomImages(hotelId, roomId));
             }
         }
         flash("error", "Access denied");
@@ -147,7 +124,7 @@ public class Rooms extends Controller {
     public static Result roomImages(Integer hotelId, Integer roomId) {
         Room room = Room.getById(roomId);
         String email = SessionManagement.getEmail(session());
-        if (room != null && room.getHotel() != null && room.getHotel().getHotelId().equals(hotelId) && room.getHotel().getClientPublisher().getEmail().equals(email)) {
+        if (room != null && room.getHotel() != null && room.getHotel().getHotelId().equals(hotelId) && HotelsLogic.isClientsHotel(room.getHotel(), email)) {
             return ok(roomImages.render(room.getImages(), room));
         }
         flash("error", "Access denied");
@@ -170,6 +147,7 @@ public class Rooms extends Controller {
         List<Date> dates = getBookedDays(roomId, hotelId, offerId);
         if (dates.size() == 0) {
             if (flash("error") != null) {
+                flash("error", flash("error"));
                 return redirect(routes.Application.index());
             }
         }
@@ -184,28 +162,27 @@ public class Rooms extends Controller {
         if (form.hasErrors()) {
             return redirect(routes.Rooms.bookingForm(offerId, hotelId, roomId));
         }
+        Booking booking = form.get();
         OfferedRoom offeredRoom = OfferedRoom.getByAllWithImages(offerId, hotelId, roomId);
         if (offeredRoom != null) {
             String endpoint = offeredRoom.getOffer().getClientPublisher().getClientData().getEndpoint();
             if (endpoint != null && offeredRoom.getHotel().getInternalHotelId() != null && offeredRoom.getRoom().getInternalRoomId() != null) {
-                response = bookRoomRemote(offeredRoom, form.get());
+                response = bookRoomRemote(offeredRoom, booking);
                 if (response == null && flash("error") != null) {
                     return redirect(routes.Application.index());
                 }
             }
-            Booking booking = form.get();
-            if ((response != null && response != -1) && canBeBooked(offeredRoom, booking.getDateFrom(), booking.getDateTo())) {
-                booking.setInternalBookingId(response);
-                booking.setOfferedRoom(offeredRoom);
-                booking.setCancelled(false);
-                Client c = Client.getClientByEmail(SessionManagement.getEmail(session()));
-                booking.setClient(c);
-                JPA.em().persist(booking);
+            Client client = Client.getClientByEmail(SessionManagement.getEmail(session()));
+            if(RoomsLogic.bookRoom(offeredRoom, booking, client, response)) {
                 flash("success", "Room booked");
-                return redirect(routes.UserProfile.profile(c.getClientId()));
+                return redirect(routes.UserProfile.profile(client.getClientId()));
             } else {
                 if (flash("error") == null)
-                    flash("error", "Selected dates are already taken! Please try again");
+                    if (endpoint != null && offeredRoom.getHotel().getInternalHotelId() == null) {
+                        flash("error", "Cannot book this offer!");
+                    } else {
+                        flash("error", "Selected dates are already taken! Please try again");
+                    }
                 return redirect(routes.Rooms.bookingForm(offerId, hotelId, roomId));
             }
         } else {

@@ -1,18 +1,13 @@
-package controllers;
+package logic;
 
 import models.Booking;
-import models.Client;
-import models.Offer;
 import models.OfferedRoom;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import play.Logger;
-import play.db.jpa.Transactional;
 import play.libs.WS;
 import play.mvc.Controller;
-import play.mvc.Result;
-import play.mvc.Security;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -39,7 +34,7 @@ public class WebServiceCaller extends Controller {
                 "</soap:Envelope>";
     }
 
-    private static String getXml(String invocation, String ns) {
+    public static String getXml(String invocation, String ns) {
         String response = null;
         try {
             response = WS.url(ns + "WS").setHeader("content-type", "application/soap+xml").post(createXML(invocation, ns)).get(1000).getBody();
@@ -47,38 +42,6 @@ public class WebServiceCaller extends Controller {
             Logger.error("Connection refused");
         }
         return response;
-    }
-
-
-    @Transactional
-    @Security.Authenticated(Secured.class)
-    public static Result synchronize() {
-        String email = SessionManagement.getEmail(session());
-        Client client = Client.getClientByEmail(email);
-        if (Client.isBusinessClient(email) && client.getClientData() != null) {
-            if (client.getClientData().getEndpoint() != null) {
-                String xml = getXml("<ns:getOffers></ns:getOffers>", client.getClientData().getEndpoint());
-                if (xml == null) {
-                    flash("error", "Connection refused");
-                }
-                LinkedList<Offer> offers = Offer.getOffersFromXml(xml);
-                if (offers.size() == 0) {
-                    flash("info", "Nothing to update");
-                } else {
-                    if (Offer.updateOrSave(offers, client)) {
-                        flash("success", "Offers updated");
-                    } else {
-                        flash("info", "No changes");
-                    }
-                }
-                return redirect(routes.UserProfile.profile(client.getClientId()));
-            } else {
-                flash("error", "Endpoint not defined");
-            }
-        } else {
-            flash("error", "Access denied");
-        }
-        return redirect(routes.Application.index());
     }
 
     public static LinkedList<Date> getBookedDays(Integer roomId, Integer hotelId, Integer offerId) {
@@ -172,7 +135,7 @@ public class WebServiceCaller extends Controller {
         return resp;
     }
 
-    public static boolean canBeBooked(OfferedRoom offeredRoom, Date from, Date to) {
+    public static boolean canBeBookedRemote(OfferedRoom offeredRoom, Date from, Date to) {
         LinkedList<Date> booked = getBookedDaysList(offeredRoom);
         for (Date day : booked) {
             if (day.before(to) && day.after(from)) {

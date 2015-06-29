@@ -1,7 +1,7 @@
 @(client: Client)
 <html><head></head><body>
 @for(o <- client.getOffersPublished) {
-    @if(o.getDateTo.before(new Date)) {
+    @if(o.getDateTo.after(new Date)) {
         <p> @o - @if(o.getPremium) {5zl} else {3zl}</p>
     }
 

@@ -17,7 +17,6 @@ import java.util.*;
 /**
  * Created by magdalena on 01.06.15.
  */
-//TODO opis tekstowy
 @Entity
 @XmlRootElement
 @Table(name = "offers")

@@ -1,5 +1,6 @@
 @(client: Client)
-    @main("Your account") {
+
+@main("Your account") {
         <div class="page-header">
             <h1>Account</h1>
         </div>
@@ -10,7 +11,7 @@
                 <p>@client.getClientData.getTelephone</p>
                 @if(client.getClientData.getEndpoint != null) {
                     <p>
-                        <a class="btn btn-default" href="@routes.WebServiceCaller.synchronize()" role="button"><i class="fa fa-cloud-download"></i> Fetch data</a>
+                        <a class="btn btn-default" href="@routes.Offers.synchronize()" role="button"><i class="fa fa-cloud-download"></i> Fetch data</a>
                     </p>
                 }
             </div>

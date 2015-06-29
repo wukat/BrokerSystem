@@ -15,7 +15,6 @@ import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPConstants;
 import javax.xml.soap.SOAPFactory;
 import javax.xml.soap.SOAPFault;
-import javax.xml.ws.soap.MTOM;
 import javax.xml.ws.soap.SOAPFaultException;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,7 +25,6 @@ import java.util.List;
 /**
  * Created by wukat on 15.06.15.
  */
-@MTOM
 @WebService(name = "HotelService", targetNamespace = "http://localhost:8080/Hotel_war_exploded/Hotel")
 public class HotelWS {
 

@@ -1,5 +1,7 @@
 package controllers;
 
+import logic.ClientLogic;
+import logic.SessionManagement;
 import models.Client;
 import models.Role;
 import models.ClientData;
@@ -13,8 +15,10 @@ import play.libs.mailer.MailerPlugin;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
+import utils.HTTPSmust;
 import views.html.*;
 
+import static logic.MailUtils.sendActivationMail;
 import static play.data.Form.form;
 
 /**
@@ -35,7 +39,7 @@ public class UserProfile extends Controller {
 
     @Transactional(readOnly = true)
     public static Result newUserDataForm(Integer id) {
-        if (Client.isClient(id)) {
+        if (ClientLogic.isClient(id)) {
             Client c = Client.getClientById(id);
             if (c.getRole().getRole().equals("business") && c.getClientData() == null) {
                 return ok(
@@ -54,14 +58,11 @@ public class UserProfile extends Controller {
         if (dataForm.hasErrors()) {
             return badRequest(personalData.render(dataForm, id));
         } else {
-            ClientData clientData = dataForm.get();
             Client client = Client.getClientById(id);
             if (client == null) {
                 return ok(notFound.render("Wrong client id"));
             }
-            clientData.setClient(client);
-            JPA.em().persist(clientData);
-            sendActivationMail(client.getEmail());
+            ClientLogic.newClientData(client, dataForm.get());
             flash("success", "Registration proceeded successfully! Check your email for confirmation mail.");
             return redirect(routes.Application.index());
         }
@@ -75,18 +76,12 @@ public class UserProfile extends Controller {
             return badRequest(createAccount.render(userForm));
         } else {
             Client newClient = userForm.get();
-            newClient.setUnreadMessages(0);
             boolean businessUser = (userForm.data().get("bu") != null);
-            newClient.setPassword(BCrypt.hashpw(newClient.getPassword(), BCrypt.gensalt()));
-            Role role = new Role(newClient, (businessUser) ? "business" : "customer");
-            Logger.debug(newClient.getEmail());
-            JPA.em().persist(newClient);
-            JPA.em().persist(role);
+            ClientLogic.newUser(newClient, businessUser);
             if (businessUser) {
                 flash("info", "Fill in your personal data to create business account.");
                 return redirect(routes.UserProfile.newUserDataForm(newClient.getClientId()));
             } else {
-                sendActivationMail(newClient.getEmail());
                 flash("success", "Registration proceeded successfully! Check your email for confirmation mail.");
                 return redirect(routes.Application.index());
             }
@@ -99,32 +94,16 @@ public class UserProfile extends Controller {
         if (client == null) {
             flash("error", "Access denied!");
         } else {
-            Client.activateClient(id);
+            ClientLogic.activateClient(id);
             flash("success", "Account activated, you can log in now!");
         }
         return ok(index.render(""));
     }
 
-    private static void sendActivationMail(String to) {
-        Integer id = Client.getClientId(to);
-        sendMail(to, "Registration confirmation",
-                "<html><body><p>Hi,</p><p>Please click the link below to confirm registration in our service <a href=\"http://localhost:9000/users/" + id + "/confirm\">link</a></p><p>Best regards!</p></body></html>");
-    }
-
-    private static void sendMail(String to, String subject, String htmlBody) {
-        Email email = new Email();
-        email.setSubject(subject);
-        email.setFrom("wojciech.kasperek.1993@gmail.com");
-        email.addTo(to);
-        email.setBodyText("");
-        email.setBodyHtml(htmlBody);
-        MailerPlugin.send(email);
-    }
-
     @Security.Authenticated(Secured.class)
     @Transactional
     public static Result profile(Integer id) {
-        if (Client.isClient(id)) {
+        if (ClientLogic.isClient(id)) {
             Client client = Client.getClientById(id);
             if (client.getEmail().equals(SessionManagement.getEmail(session()))) {
                 return ok(profileView.render(client));

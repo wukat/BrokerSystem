@@ -106,10 +106,7 @@ public class Global extends GlobalSettings {
                     }
                 }
                 ,
-                Akka.system().
-
-                        dispatcher()
-
+                Akka.system().dispatcher()
         );
     }
 

@@ -1,9 +1,11 @@
 package controllers;
 
+import logic.ClientLogic;
+import logic.HotelsLogic;
+import logic.SessionManagement;
 import models.Client;
 import models.Hotel;
 import play.data.Form;
-import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -21,7 +23,7 @@ public class Hotels extends Controller {
     @Security.Authenticated(Secured.class)
     @Transactional(readOnly = true)
     public static Result newHotelForm() {
-        if (Client.isBusinessClient(SessionManagement.getEmail(session()))) {
+        if (ClientLogic.isBusinessClient(SessionManagement.getEmail(session()))) {
             return ok(createHotel.render(form(Hotel.class)));
         }
         flash("error", "You are not allowed to add hotels.");
@@ -35,11 +37,7 @@ public class Hotels extends Controller {
         if (hotelForm.hasErrors()) {
             return badRequest(createHotel.render(hotelForm));
         }
-        String email = SessionManagement.getEmail(session());
-        if (Client.isBusinessClient(email)) {
-            Hotel hotel = hotelForm.get();
-            hotel.setClientPublisher(Client.getClientByEmail(email));
-            JPA.em().persist(hotel);
+        if (HotelsLogic.newHotel(hotelForm.get(), SessionManagement.getEmail(session()))) {
             flash("info", "New hotel added successfully");
             return redirect(routes.Hotels.all());
         }
@@ -51,7 +49,7 @@ public class Hotels extends Controller {
     @Transactional(readOnly = true)
     public static Result editHotelForm(Integer hotelId) {
         String email = SessionManagement.getEmail(session());
-        if (Client.isBusinessClient(email)) {
+        if (ClientLogic.isBusinessClient(email)) {
             Hotel hotel = Hotel.getById(hotelId);
             if (hotel != null && hotel.getClientPublisher().getEmail().equals(email)) {
                 Form<Hotel> hotelForm = form(Hotel.class).fill(hotel);
@@ -69,33 +67,9 @@ public class Hotels extends Controller {
         if (hotelForm.hasErrors()) {
             return badRequest(createHotel.render(hotelForm));
         }
-        String email = SessionManagement.getEmail(session());
-        if (Client.isBusinessClient(email)) {
-            Hotel hotel = Hotel.getById(hotelId);
-            if (hotel != null && hotel.getClientPublisher().getEmail().equals(email)) {
-                Hotel hotelNew = hotelForm.get();
-                hotel.setName(hotelNew.getName());
-                hotel.setStandard(hotelNew.getStandard());
-                JPA.em().merge(hotel);
-                flash("info", "Hotel saved successfully");
-                return redirect(routes.Hotels.all());
-            }
-        }
-        flash("error", "Access denied.");
-        return redirect(routes.Application.index());
-    }
-
-    @Security.Authenticated(Secured.class)
-    @Transactional
-    public static Result removeHotel(Integer hotelId) {
-        String email = SessionManagement.getEmail(session());
-        if (Client.isBusinessClient(email)) {
-            Hotel hotel = Hotel.getById(hotelId);
-            if (hotel != null && hotel.getClientPublisher().getEmail().equals(email)) {
-                JPA.em().remove(hotel);
-                flash("info", "Hotel removed successfully");
-                return redirect(request().uri());
-            }
+        if (HotelsLogic.editHotel(hotelId, hotelForm.get(), SessionManagement.getEmail(session()))) {
+            flash("info", "Hotel saved successfully");
+            return redirect(routes.Hotels.all());
         }
         flash("error", "Access denied.");
         return redirect(routes.Application.index());
@@ -105,7 +79,7 @@ public class Hotels extends Controller {
     @Transactional(readOnly = true)
     public static Result all() {
         String email = SessionManagement.getEmail(session());
-        if (Client.isBusinessClient(email)) {
+        if (ClientLogic.isBusinessClient(email)) {
             Client client = Client.getClientByEmail(email);
             return ok(hotelsView.render(client.getHotelsPublished()));
         }

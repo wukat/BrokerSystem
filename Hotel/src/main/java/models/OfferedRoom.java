@@ -6,7 +6,6 @@ import javax.xml.bind.annotation.XmlTransient;
 /**
  * Created by magdalena on 01.06.15.
  */
-//TODO opis tekstowy
 @Entity
 @Table(name="offered_rooms")
 public class OfferedRoom {
